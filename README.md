@@ -203,7 +203,17 @@ success: 状态
 **返回值**  
 条件所限，尚未明晰
 
-## 示例
+## Python 示例
+
+### 安装
+
+1. 使用 pip  
+`pip install -r requerments.txt`
+
+2. 使用 [pipenv](https://docs.pipenv.org)  
+`pipenv install`
+
+### 功能
 
 1. 支持导出课表为 ics 日历文件
 
