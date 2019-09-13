@@ -366,16 +366,19 @@ class Student(object):
 
 class My_Calendar(object):
     def __init__(self, start_date, filename):
-        # self.student = student
+        self.student = Student(account, password)
         self.data = self.gen_data()
-        self.start_date = start_date
-        self.filename = filename
+        self.start_date = start_date    # 学期起始日期，格式为 %Y-%m-%d
+        self.filename = filename        # 日历文件名
 
     def gen_data(self):
+        """
+            生成日历所需的 jason 数据
+        """
         data = []
         tmp = []
         for i in range(1, 31):
-            res = test.getKbcxAzc(i)
+            res = self.student.getKbcxAzc(i)
             if res:
                 for j in res:
                     tmp.append(j)
@@ -385,6 +388,9 @@ class My_Calendar(object):
         return data
 
     def gen_cal(self):
+        """
+            生成日历文件，文件名为 self.filename，路径为当前路径
+        """
 
         tz = pytz.timezone('Asia/Shanghai')
 
@@ -447,13 +453,13 @@ class My_Calendar(object):
 
 
 if __name__ == '__main__':
-    account = os.getenv('ACCOUNT')
-    password = os.getenv('PASSWORD')
+    account = os.getenv('ACCOUNT')      # 账号
+    password = os.getenv('PASSWORD')    # 密码
     url = 'http://218.75.197.123:83/app.do'     # 教务系统地址
 
-    # test = Student(account, password)
     # t = My_Calendar('2019-09-02', 'kb.ics')
+    # t.gen_cal()
     # with open('kb.json', 'w', encoding='utf8') as f:
-    #     json.dump(t.gen_data(), f)
+    #     json.dump(t.gen_data(), f, ensure_ascii=False)
     app.run(debug=True)
     pass
