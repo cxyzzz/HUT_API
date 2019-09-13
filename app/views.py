@@ -38,6 +38,7 @@ def login():
                 error = '错误的账号或密码'
                 return render_template('test.html', form=form, error=error)
 
+            session.permanent = True
             session['account'] = account
             session['password'] = password
 
