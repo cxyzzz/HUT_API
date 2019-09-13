@@ -213,6 +213,16 @@ success: 状态
 2. 使用 [pipenv](https://docs.pipenv.org)  
 `pipenv install`
 
+### 使用
+
+1,2任选一个
+
+1. 使用环境变量 (推荐)  
+`export ACCOUNT=#你的学号#`
+`export PASSWORD=#密码#`
+
+2. 修改文件末尾的`account = os.getenv('ACCOUNT') password = os.getenv('PASSWORD')` 把等于号后面的替换为你的学号以及密码
+
 ### 功能
 
 1. 支持导出课表为 ics 日历文件
