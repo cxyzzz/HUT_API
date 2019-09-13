@@ -70,7 +70,7 @@ def gen_cal():
     account = session['account']
     global password
     password = session['password']
-    
+
     filename = account + '.ics'
     t = My_Calendar(filename)
     t.gen_cal()
