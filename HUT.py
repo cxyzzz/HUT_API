@@ -18,6 +18,10 @@ import requests
 from icalendar import Calendar, Event
 from app import app, views
 
+account = os.getenv('ACCOUNT')      # 账号
+password = os.getenv('PASSWORD')    # 密码
+url = 'http://218.75.197.123:83/app.do'     # 教务系统地址
+
 # def get_username_password(self):
 #     """
 #     解析命令行参数 得到用户名和密码
@@ -363,22 +367,14 @@ class Student(object):
         res = self.get_data(params)
         return res
 
-
-class My_Calendar(object):
-    def __init__(self, start_date, filename):
-        self.student = Student(account, password)
-        self.data = self.gen_data()
-        self.start_date = start_date    # 学期起始日期，格式为 %Y-%m-%d
-        self.filename = filename        # 日历文件名
-
-    def gen_data(self):
+    def gen_Kb_json_data(self):
         """
-            生成日历所需的 jason 数据
+            生成所有课程的 json 数据
         """
         data = []
         tmp = []
         for i in range(1, 31):
-            res = self.student.getKbcxAzc(i)
+            res = self.getKbcxAzc(i)
             if res:
                 for j in res:
                     tmp.append(j)
@@ -386,6 +382,55 @@ class My_Calendar(object):
             if i not in data:
                 data.append(i)
         return data
+
+    def gen_Kb_web_data(self):
+        """
+            生成网页所需的课表数据
+        """
+        data = {}
+        kb = self.gen_Kb_json_data()
+        for i in range(1, 8):
+            for j in range(1, 8):
+                data['kb' + str(i)+'_'+str(j)] = '&nbsp;'
+        for i in kb:
+            dic_key = 'kb' + i['kcsj'][0:1]+'_' + \
+                str(int((int(i['kcsj'][2:3])+int(i['kcsj'][4:])+1)/4))
+            if data[dic_key] != '&nbsp;':
+                m = data[dic_key]['multy']
+                m += 1
+                data[dic_key]['multy'] = m
+                data[dic_key]['multy' + str(m)] = {
+                    'kcmc': i['kcmc'],
+                    'jsxm': i['jsxm'],
+                    'kkzc': i['kkzc'],
+                    'jsmc': i['jsmc']
+                }
+
+            else:
+                data[dic_key] = {
+                    'multy': 0,
+                    'kcmc': i['kcmc'],
+                    'jsxm': i['jsxm'],
+                    'kkzc': i['kkzc'],
+                    'jsmc': i['jsmc']
+                }
+        data['user'] = self.getUserInfo()
+        return data
+
+
+class My_Calendar(object):
+    def __init__(self, filename='kb.ics'):
+        self.student = Student(account, password)
+        self.data = self.student.gen_Kb_json_data()     # 所有课程的 json 数据
+        self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
+        self.filename = filename        # 日历文件名
+
+    def get_start_date(self):
+        res = self.student.get_current_time()
+        start_date_datetime = datetime.strptime(res['s_time'], "%Y-%m-%d") \
+            - timedelta(days=(int(res['zc'])-1)*7)
+        return datetime.strftime(
+            start_date_datetime, '%Y-%m-%d')
 
     def gen_cal(self):
         """
@@ -453,13 +498,11 @@ class My_Calendar(object):
 
 
 if __name__ == '__main__':
-    account = os.getenv('ACCOUNT')      # 账号
-    password = os.getenv('PASSWORD')    # 密码
-    url = 'http://218.75.197.123:83/app.do'     # 教务系统地址
-
-    # t = My_Calendar('2019-09-02', 'kb.ics')
+    # test = Student(account, password)
+    # a = test.get_current_time()
+    # t = My_Calendar()
     # t.gen_cal()
     # with open('kb.json', 'w', encoding='utf8') as f:
-    #     json.dump(t.gen_data(), f, ensure_ascii=False)
+    #     json.dump(t.gen_Kb_json_data(), f, ensure_ascii=False)
     app.run(debug=True)
     pass

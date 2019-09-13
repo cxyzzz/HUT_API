@@ -10,6 +10,7 @@ flask = "*"
 icalendar = "*"
 beautifulsoup4 = "*"
 requests = "*"
+flask-wtf = "*"
 
 [requires]
 python_version = "3.7"

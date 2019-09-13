@@ -1,77 +1,80 @@
-from flask import redirect, render_template, request
+from flask import flash, redirect, render_template, session, url_for, request, send_file, send_from_directory, make_response
 from app import app
-import json
-from HUT import Student
+# import json
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired
+from HUT import Student, My_Calendar
+import os
 
 
-@app.route('/')
-def index():
-    data = {}
-    kb = json.load(open('kb.json', 'r', encoding='utf8'))
-    for i in range(1, 8):
-        for j in range(1, 8):
-            data['kb' + str(i)+'_'+str(j)] = '&nbsp;'
-    for i in kb:
-        dic_key = 'kb' + i['kcsj'][0:1]+'_' + \
-            str(int((int(i['kcsj'][2:3])+int(i['kcsj'][4:])+1)/4))
-        if data[dic_key] != '&nbsp;':
-            m = data[dic_key]['multy']
-            m += 1
-            data[dic_key]['multy'] = m
-            data[dic_key]['multy' + str(m)] = {
-                'kcmc': i['kcmc'],
-                'jsxm': i['jsxm'],
-                'kkzc': i['kkzc'],
-                'jsmc': i['jsmc']
-            }
-
-        else:
-            data[dic_key] = {
-                'multy': 0,
-                'kcmc': i['kcmc'],
-                'jsxm': i['jsxm'],
-                'kkzc': i['kkzc'],
-                'jsmc': i['jsmc']
-            }
-    print(data)
-    return render_template('index.html', **data)
+class MyForm(FlaskForm):
+    account = StringField(
+        label='学号',
+        validators=[InputRequired(message=u'学号不能为空')]
+    )
+    password = PasswordField(
+        label='密码',
+        validators=[InputRequired(message=u'密码不能为空')]
+    )
+    submit = SubmitField('Go')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    try:
-        account = request.form.get("account", type=str, default=None)
-        password = request.form.get("password", type=str, default=None)
-    except ValueError as verr:
-        print('*'*50)
-        print(verr)
-        print('*'*50)
-    print('-'*50)
-    print('%s %s' % (account, password))
-    print('-'*50)
+    form = MyForm()
 
-    test = Student(account, password)
-    data = []
-    tmp = []
+    if request.method == 'GET':
+        return render_template('test.html', form=form, error=None)
 
-    for i in range(1, 31):
-        res = test.getKbcxAzc('%d' % i)
-        if res:
-            print('正在获取第 %s 周课表数据' % i)
-            for j in res:
-                tmp.append(j)
-    for i in tmp:
-        if i not in data:
-            data.append(i)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            account = request.form.get("account", type=str, default=None)
+            password = request.form.get("password", type=str, default=None)
 
-    print('正在处理数据')
+            test = Student(account, password)
 
-    with open('kb.json', 'w',  encoding='utf8') as f:
-        json.dump(data, f, ensure_ascii=False)
+            if test.HEADERS['token'] == '-1':
+                error = '错误的账号或密码'
+                return render_template('test.html', form=form, error=error)
 
-    return redirect('/')
+            session['account'] = account
+            session['password'] = password
+
+            flash('You were successfully logged in')
+            return redirect(url_for('index'))
+        return redirect(url_for('login'))
 
 
-@app.route('/test')
-def test():
-    return 'test'
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if (session.get('account') and session.get('password')):
+        account = session['account']
+        password = session['password']
+        test = Student(account, password)
+        if test.HEADERS['token'] == '-1':
+            error = '错误的账号或密码'
+            return render_template('test.html', form=MyForm(), error=error)
+        data = test.gen_Kb_web_data()
+        flash('You were successfully logged in')
+        return render_template('index.html', **data)
+
+    else:
+        if request.method == 'GET':
+            return redirect(url_for('login'))
+
+
+@app.route('/gen_cal')
+def gen_cal():
+    global account
+    account = session['account']
+    global password
+    password = session['password']
+    
+    filename = account + '.ics'
+    t = My_Calendar(filename)
+    t.gen_cal()
+    directory = os.getcwd()
+    response = make_response(send_from_directory(
+        directory, filename, as_attachment=True))
+    return response
