@@ -16,7 +16,8 @@ import requests
 # import getopt
 # import getpass
 from icalendar import Calendar, Event
-from app import app, views
+from app import app
+# import app.views
 
 account = os.getenv('ACCOUNT')      # 账号
 password = os.getenv('PASSWORD')    # 密码

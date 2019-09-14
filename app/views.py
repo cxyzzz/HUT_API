@@ -1,6 +1,6 @@
 import os
 
-from flask import (flash, make_response, redirect, render_template,
+from flask import (make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
 # import json
 from flask_wtf import FlaskForm
@@ -8,7 +8,7 @@ from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import InputRequired
 import datetime
 from app import app
-from HUT import My_Calendar, Student
+import HUT
 
 
 class MyForm(FlaskForm):
@@ -36,7 +36,7 @@ def login():
             account = request.form.get("account", type=str, default=None)
             password = request.form.get("password", type=str, default=None)
 
-            test = Student(account, password)
+            test = HUT.Student(account, password)
 
             if test.HEADERS['token'] == '-1':
                 error = '错误的账号或密码'
@@ -57,7 +57,7 @@ def index():
     if (session.get('account') and session.get('password')):
         account = session['account']
         password = session['password']
-        test = Student(account, password)
+        test = HUT.Student(account, password)
         if test.HEADERS['token'] == '-1':
             error = '错误的账号或密码'
             return render_template('test.html', form=MyForm(), error=error)
@@ -75,7 +75,7 @@ def gen_cal():
         account = request.args.get('xh')
         password = request.args.get('pwd')
         filename = account + '.ics'
-        t = My_Calendar(filename, account, password)
+        t = HUT.My_Calendar(filename, account, password)
         if t.student.HEADERS['token'] == '-1':
             error = '错误的账号或密码'
             return render_template('test.html', form=MyForm(), error=error)
@@ -91,7 +91,7 @@ def gen_cal():
         password = session['password']
         print(session)
         filename = account + '.ics'
-        t = My_Calendar(filename, account, password)
+        t = HUT.My_Calendar(filename, account, password)
         t.gen_cal()
         directory = os.getcwd()
         response = make_response(send_from_directory(
