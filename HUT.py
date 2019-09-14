@@ -50,8 +50,8 @@ url = 'http://218.75.197.123:83/app.do'     # 教务系统地址
 class Student(object):
     def __init__(self, account, password):
         self.argv = sys.argv
-        self.account = account
-        self.password = password
+        self.account = account      # 账号，默认使用全局变量 account
+        self.password = password    # 密码，默认使用全局变量 password
         self.session = self.login()
 
     HEADERS = {
@@ -376,6 +376,7 @@ class Student(object):
         for i in range(1, 31):
             res = self.getKbcxAzc(i)
             if res:
+                print('正在获取第 %d 周课表' % i)
                 for j in res:
                     tmp.append(j)
         for i in tmp:
@@ -385,7 +386,7 @@ class Student(object):
 
     def gen_Kb_web_data(self):
         """
-            生成网页所需的课表数据
+            生成网页所需的总课表数据
         """
         data = {}
         kb = self.gen_Kb_json_data()
@@ -419,8 +420,10 @@ class Student(object):
 
 
 class My_Calendar(object):
-    def __init__(self, filename='kb.ics'):
-        self.student = Student(account, password)
+    def __init__(self, filename='kb.ics', account=account, password=password):
+        self.account = account      # 账号，默认使用全局变量 account
+        self.password = password    # 密码，默认使用全局变量 password
+        self.student = Student(self.account, self.password)
         self.data = self.student.gen_Kb_json_data()     # 所有课程的 json 数据
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
@@ -504,5 +507,4 @@ if __name__ == '__main__':
     # t.gen_cal()
     # with open('kb.json', 'w', encoding='utf8') as f:
     #     json.dump(t.gen_Kb_json_data(), f, ensure_ascii=False)
-    app.run(debug=True)
-    pass
+    app.run()

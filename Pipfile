@@ -8,9 +8,9 @@ verify_ssl = true
 [packages]
 flask = "*"
 icalendar = "*"
-beautifulsoup4 = "*"
 requests = "*"
 flask-wtf = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.7"

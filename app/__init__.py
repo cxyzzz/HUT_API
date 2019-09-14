@@ -3,7 +3,11 @@
 from flask import Flask
 import os
 
-app = Flask(__name__)
 
-app.config['SECRET_KEY'] = os.urandom(24)
-app.config['PERMANENT_SESSION_LIFETIME'] = 900
+config = {
+    'DEBUG': True,
+    'SECRET_KEY': os.urandom(24),
+    'PERMANENT_SESSION_LIFETIME': 900,
+}
+app = Flask(__name__)
+app.config.from_mapping(config)
