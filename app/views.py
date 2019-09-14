@@ -5,7 +5,7 @@ from flask import (make_response, redirect, render_template,
 # import json
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
-from wtforms.validators import InputRequired
+from wtforms.validators import InputRequired, Length
 import datetime
 from app import app
 import HUT
@@ -31,13 +31,11 @@ def login():
         return render_template('test.html', form=form, error=None)
 
     if request.method == 'POST':
-        print(datetime.datetime.now())
         if form.validate_on_submit():
             account = request.form.get("account", type=str, default=None)
             password = request.form.get("password", type=str, default=None)
 
             test = HUT.Student(account, password)
-
             if test.HEADERS['token'] == '-1':
                 error = '错误的账号或密码'
                 return render_template('test.html', form=form, error=error)
@@ -45,8 +43,9 @@ def login():
             session.permanent = True
             session['account'] = account
             session['password'] = password
-            print(session)
+            # print(session)
             return redirect(url_for('index'))
+        print('*'*50)
         return redirect(url_for('login'))
 
 
@@ -62,7 +61,6 @@ def index():
             error = '错误的账号或密码'
             return render_template('test.html', form=MyForm(), error=error)
         session['data'] = test.gen_Kb_web_data()
-        print(datetime.datetime.now())
         return render_template('index.html', **session['data'])
     else:
         return redirect(url_for('login'))
@@ -83,20 +81,18 @@ def gen_cal():
         directory = os.getcwd()
         response = make_response(send_from_directory(
             directory, filename, as_attachment=True))
-        print(datetime.datetime.now())
         return response
 
     try:
         account = session['account']
         password = session['password']
-        print(session)
+        # print(session)
         filename = account + '.ics'
         t = HUT.My_Calendar(filename, account, password)
         t.gen_cal()
         directory = os.getcwd()
         response = make_response(send_from_directory(
             directory, filename, as_attachment=True))
-        print(datetime.datetime.now())
         return response
     except KeyError:
         return redirect(url_for('login'))
