@@ -373,16 +373,13 @@ class Student(object):
             生成所有课程的 json 数据
         """
         data = []
-        tmp = []
         for i in range(1, 31):
             res = self.getKbcxAzc(i)
             if res:
-                print('正在获取第 %d 周课表' % i)
+                # print('正在获取第 %d 周课表' % i)
                 for j in res:
-                    tmp.append(j)
-        for i in tmp:
-            if i not in data:
-                data.append(i)
+                    if j not in data:
+                        data.append(j)
         return data
 
     def gen_Kb_web_data(self):
@@ -407,7 +404,6 @@ class Student(object):
                     'kkzc': i['kkzc'],
                     'jsmc': i['jsmc']
                 }
-
             else:
                 data[dic_key] = {
                     'multy': 0,
@@ -421,11 +417,11 @@ class Student(object):
 
 
 class My_Calendar(object):
-    def __init__(self, filename='kb.ics', account=account, password=password):
+    def __init__(self, filename='kb.ics', account=account, password=password, data=-1):
         self.account = account      # 账号，默认使用全局变量 account
         self.password = password    # 密码，默认使用全局变量 password
         self.student = Student(self.account, self.password)
-        self.data = self.student.gen_Kb_json_data()     # 所有课程的 json 数据
+        self.data = self.student.gen_Kb_json_data() if (data == -1) else data     # 所有课程的 json 数据
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
 
