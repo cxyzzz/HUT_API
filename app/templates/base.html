@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Login | 𝓗𝓸𝓼𝓱𝓲𝔃𝓸𝓻𝓪</title>
+        {% block styles %}
+            {{ bootstrap.load_css() }}
+        {% endblock %}
+    {% endblock %}
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+
+    {% block scripts %}
+    {{ bootstrap.load_js() }}
+    {% endblock %}
+</body>
+
+</html>

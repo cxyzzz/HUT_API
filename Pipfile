@@ -12,6 +12,7 @@ requests = "*"
 flask-wtf = "*"
 beautifulsoup4 = "*"
 gunicorn = "*"
+bootstrap-flask = "*"
 
 [requires]
 python_version = "3.7"

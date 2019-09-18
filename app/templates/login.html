@@ -1,62 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% from 'bootstrap/form.html' import render_field %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
+{% block head %}
+<link rel="apple-touch-icon" sizes="180x180" href="/static/images/avatar.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/images/avatar.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/images/avatar.png">
+<link rel="mask-icon" href="/static/images/avatar.png" color="#eee">
+{% block styles %}
+{{super()}}
+<link href="/static/login.css" rel="stylesheet">
+{% endblock %}
+{% endblock %}
 
-<body>    
-    <script src="//cdn.jsdelivr.net/gh/cxyzzz/CDN@19.7.19a/js/activate-power-mode.js"></script>
-    <script>
-        POWERMODE.colorful = !0, POWERMODE.shake = !1, document.body.addEventListener("input", POWERMODE)
-    </script>
-    <form method="POST" action="/login" align="center">
-        {{ form.csrf_token }}
-        {{ form.account.label }}
-        {{ form.account(style='color:red',placeholder='请输入用户名') }}
 
-        {{ form.password.label }}
-        {{ form.password() }}
-        {{ form.submit() }}
-    </form>
-    <div class="flash">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <ul class=flashes>
-            {% for category, message in messages %}
-            {% if category =='error'%}
-            <li style="color:red">{{ message }}</li>
-            {% else %}
-            <li style="color:green">{{ message }}</li>
-            {% endif %}
-            {% endfor %}
-        </ul>
+{% block content %}
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash" align="center">
+        {% for category, message in messages %}
+        {% if category =='error'%}
+        <li style="color:red">{{ message }}</li>
+        {% else %}
+        <li style="color:green">{{ message }}</li>
         {% endif %}
-        {% endwith %}
+        {% endfor %}
     </div>
-    <script src="//cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script>
-        $(".flash").fadeOut(3000);
-    </script>
-    <script type="text/javascript">
-        var OriginTitile = document.title;
-        var titleTime;
-        document.addEventListener('visibilitychange', function () {
-            if (document.hidden) {
-                $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
-                document.title = '╭(°A°`)╮ 页面崩溃啦 ~';
-                clearTimeout(titleTime);
-            } else {
-                $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
-                document.title = '(ฅ>ω<*ฅ) 噫又好了~' + OriginTitile;
-                titleTime = setTimeout(function () {
-                        document.title = OriginTitile;
-                    },
-                    2000);
-            }
-        });
-    </script>
-</body>
+    {% endif %}
+    {% endwith %}
+    <form class="form-signin" method="POST" action="/login" align="center">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        {{ form.csrf_token() }}
+        {{ form.account.label(class="sr-only") }}
+        {{ form.account(style='color:red',class="form-control",placeholder='学号') }}
+        {{ form.password.label(class="sr-only") }}
+        {{ form.password(class="form-control",placeholder='密码') }}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+</div>
+{% block scripts %}
+{{ super() }}
+<script src="//cdn.jsdelivr.net/gh/cxyzzz/CDN@19.7.19a/js/activate-power-mode.js"></script>
+<script>
+    POWERMODE.colorful = !0, POWERMODE.shake = !1, document.body.addEventListener("input", POWERMODE)
+</script>
+<script>
+    $(".flash").fadeOut(3000);
+</script>
+<script type="text/javascript">
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
+            document.title = '╭(°A°`)╮ 页面崩溃啦 ~';
+            clearTimeout(titleTime);
+        } else {
+            $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
+            document.title = '(ฅ>ω<*ฅ) 噫又好了~' + OriginTitile;
+            titleTime = setTimeout(function () {
+                    document.title = OriginTitile;
+                },
+                2000);
+        }
+    });
+</script>
+{% endblock %}
 
-</html>
+{% endblock %}

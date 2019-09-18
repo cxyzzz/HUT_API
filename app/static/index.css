@@ -1,0 +1,363 @@
+#needsharebutton-postbottom {
+    cursor: pointer;
+    height: 26px;
+    margin-top: 10px;
+    position: relative
+}
+
+#needsharebutton-postbottom .btn {
+    border: 1px solid 10px;
+    border-radius: 3px;
+    display: initial;
+    padding: 1px 4px
+}
+
+body {
+    background: #eee;
+    color: #1a2a3a;
+    font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 1em;
+    line-height: 2
+}
+
+.curriculum {
+    border-radius: 8px;
+    webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12), 0 3px 1px -2px rgba(0, 0, 0, .06), 0 1px 5px 0 rgba(0, 0, 0, .12),
+        0 -1px 0.5px 0 rgba(0, 0, 0, .09);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12), 0 3px 1px -2px rgba(0, 0, 0, .06), 0 1px 5px 0 rgba(0, 0, 0, .12), 0 -1px 0.5px 0 rgba(0, 0, 0, .09);
+    background: rgba(255, 255, 255, .75);
+}
+
+table {
+    table-layout: fixed;
+    word-break: break-all;
+    word-wrap: break-word;
+    border: 1px solid black;
+    width: 70%;
+}
+
+td,
+th {
+    font-weight: 400;
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+    border: 1px solid #1a2a3a;
+    border-bottom: 2px solid #1a2a3a
+}
+
+th {
+    width: 70px;
+    height: 28px;
+    text-align: center;
+    font-weight: 700;
+    padding-bottom: 10px
+}
+
+td {
+    width: 123px;
+    height: 28px;
+    text-align: -webkit-center;
+    vertical-align: top;
+    border-bottom-width: 1px
+}
+
+td:hover {
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #fff1eb), to(#ace0f9));
+    background-image: linear-gradient(to top, #fff1eb 0, #ace0f9 100%);
+}
+
+.kbcontent {
+    text-align: center
+}
+
+.btn {
+    color: #1a2a3a;
+    transition-duration: .2s;
+    transition-timing-function: ease-in-out;
+    transition-property: background-color;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+    border: none;
+    background: 0 0;
+    font-size: 17px;
+}
+
+.btn:hover {
+    background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #a166ab), color-stop(25%,
+                #ef4e7b), color-stop(50%, #f37055), color-stop(75%, #ef4e7b), to(#a166ab));
+    background-image: linear-gradient(90deg, #a166ab 0, #ef4e7b 25%, #f37055 50%, #ef4e7b 75%, #a166ab 100%);
+    border: none
+}
+
+#needsharebutton-postbottom {
+    cursor: pointer;
+    height: 26px;
+    margin-top: 10px;
+    position: relative;
+}
+
+.post-widgets {
+    border-top: 1px solid #eee;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.footer-inner {
+    font-family: 'Comic Sans MS', Playball;
+    text-align: center;
+    color: #4b5cc4;
+}
+
+@media (max-width: 991px) {
+    .footer-inner {
+        padding: 0;
+        width: auto;
+    }
+}
+
+::selection {
+    background: #b0a4e3;
+    color: #1a2a3a
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-weight: 700;
+    line-height: 1.5;
+    margin: 20px 0 15px;
+    padding: 0
+}
+
+h1 {
+    font-size: 1.75em
+}
+
+h2 {
+    font-size: 1.625em
+}
+
+h3 {
+    font-size: 1.5em
+}
+
+h4 {
+    font-size: 1.375em
+}
+
+h5 {
+    font-size: 1.25em
+}
+
+h6 {
+    font-size: 1.125em
+}
+
+p {
+    margin: 0 0 20px 0
+}
+
+a,
+span.exturl {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    background-color: transparent;
+    border-bottom: 1px solid #999;
+    color: #4b5cc4;
+    outline: 0;
+    text-decoration: none;
+    cursor: pointer
+}
+
+a:hover,
+span.exturl:hover {
+    border-bottom-color: #222;
+    color: #fc6423
+}
+
+#reward-container {
+    margin: 20px auto;
+    padding: 10px 0;
+    text-align: center;
+    width: 90%
+}
+
+#reward-button {
+    background: #f44336;
+    border: 0;
+    text-rendering: auto;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 100%;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    letter-spacing: normal;
+    line-height: 2;
+    margin: 0;
+    outline: 0;
+    padding: 0 15px;
+    text-indent: 0;
+    text-shadow: none;
+    text-transform: none;
+    vertical-align: text-top
+}
+
+#reward-button span:hover {
+    background: #f7877f
+}
+
+#qr {
+    padding-top: 20px
+}
+
+#qr a {
+    border: 0
+}
+
+#qr img {
+    display: inline-block;
+    margin: .8em 2em 0 2em;
+    max-width: 100%;
+    width: 180px
+}
+
+#qr p {
+    text-align: center
+}
+
+#qr>div:hover p {
+    -webkit-animation: roll .1s infinite linear;
+    animation: roll .1s infinite linear
+}
+
+@-webkit-keyframes roll {
+    from {
+        -webkit-transform: rotateZ(30deg);
+        transform: rotateZ(30deg)
+    }
+
+    to {
+        -webkit-transform: rotateZ(-30deg);
+        transform: rotateZ(-30deg)
+    }
+}
+
+@keyframes roll {
+    from {
+        -webkit-transform: rotateZ(30deg);
+        transform: rotateZ(30deg)
+    }
+
+    to {
+        -webkit-transform: rotateZ(-30deg);
+        transform: rotateZ(-30deg)
+    }
+}
+
+@-webkit-keyframes rainbow {
+    0% {
+        background-position: 0 80%
+    }
+
+    50% {
+        background-position: 100% 20%
+    }
+
+    100% {
+        background-position: 0 80%
+    }
+}
+
+@keyframes rainbow {
+    0% {
+        background-position: 0 80%
+    }
+
+    50% {
+        background-position: 100% 20%
+    }
+
+    100% {
+        background-position: 0 80%
+    }
+}
+
+::-webkit-scrollbar {
+    height: 8px;
+    width: 8px
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .2);
+    border-radius: 10px
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(0, 0, 0, .1)
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, .3)
+}
+
+::-webkit-scrollbar-thumb:active {
+    background-color: rgba(0, 0, 0, .4)
+}
+
+h2 {
+    counter-reset: h3
+}
+
+h3 {
+    counter-reset: h4
+}
+
+h4 {
+    counter-reset: h5
+}
+
+h5 {
+    counter-reset: h6
+}
+
+.body h2:before {
+    counter-increment: h2;
+    content: counter(h2) '. '
+}
+
+.body h3:not(.note.success):before {
+    counter-increment: h3;
+    content: counter(h2) '.'counter(h3) '. '
+}
+
+.body h4:before {
+    counter-increment: h4;
+    content: counter(h2) '.'counter(h3) '.'counter(h4) '. '
+}
+
+.body h5:before {
+    counter-increment: h5;
+    content: counter(h2) '.'counter(h3) '.'counter(h4) '.'counter(h5) '. '
+}
+
+.body h6:before {
+    counter-increment: h6;
+    content: counter(h2) '.'counter(h3) '.'counter(h4) '.'counter(h5) '.'counter(h6) '. '
+}
+
+h2.nocount:before,
+h3.nocount:before,
+h4.nocount:before,
+h5.nocount:before,
+h6.nocount:before {
+    content: '';
+    counter-increment: none
+}

@@ -16,8 +16,6 @@ import requests
 # import getopt
 # import getpass
 from icalendar import Calendar, Event
-from app import app
-# import app.views
 
 account = os.getenv('ACCOUNT')      # 账号
 password = os.getenv('PASSWORD')    # 密码
@@ -499,9 +497,9 @@ class My_Calendar(object):
 
 if __name__ == '__main__':
     # test = Student(account, password)
-    # a = test.get_current_time()
+    # a = test.gen_Kb_json_data()
     # t = My_Calendar()
     # t.gen_cal()
     # with open('kb.json', 'w', encoding='utf8') as f:
     #     json.dump(t.gen_Kb_json_data(), f, ensure_ascii=False)
-    app.run()
+    pass

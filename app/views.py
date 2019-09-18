@@ -1,15 +1,15 @@
 import os
 
-from flask import (flash, make_response, redirect, render_template,
+from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
-# import json
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import InputRequired
-from app import app
-import HUT
+from app.HUT import Student, My_Calendar
 
+hut = Blueprint('hut', __name__, template_folder='templates')
 
+    
 class MyForm(FlaskForm):
     account = StringField(
         label='学号',
@@ -22,7 +22,7 @@ class MyForm(FlaskForm):
     submit = SubmitField('Go')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@hut.route('/login', methods=['GET', 'POST'])
 def login():
     form = MyForm()
 
@@ -33,7 +33,7 @@ def login():
         if form.validate_on_submit():
             account = request.form.get("account", type=str, default=None)
             password = request.form.get("password", type=str, default=None)
-            test = HUT.Student(account, password)
+            test = Student(account, password)
             if test.HEADERS['token'] == '-1':
                 flash('用户名或密码错误...', category='error')
                 return render_template('login.html', form=form)
@@ -42,35 +42,35 @@ def login():
             session['account'] = account
             session['password'] = password
             # print(session)
-            return redirect(url_for('index'))
+            return redirect(url_for('hut.index'))
         print('*'*50)
-        return redirect(url_for('login'))
+        return redirect(url_for('hut.login'))
 
-
-@app.route('/', methods=['GET', 'POST'])
+           
+@hut.route('/', methods=['GET', 'POST'])
 def index():
     if session.get('data'):
         return render_template('index.html', **session['data'])
     if (session.get('account') and session.get('password')):
         account = session['account']
         password = session['password']
-        test = HUT.Student(account, password)
+        test = Student(account, password)
         if test.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
         session['data'] = test.gen_Kb_web_data()
         return render_template('index.html', **session['data'])
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('hut.login'))
 
 
-@app.route('/gen_cal')
+@hut.route('/gen_cal')
 def gen_cal():
     if (request.args.get('xh') and request.args.get('pwd')):
         account = request.args.get('xh')
         password = request.args.get('pwd')
         filename = account + '.ics'
-        t = HUT.My_Calendar(filename, account, password)
+        t = My_Calendar(filename, account, password)
         if t.student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
@@ -84,17 +84,17 @@ def gen_cal():
         account = session['account']
         password = session['password']
         filename = account + '.ics'
-        t = HUT.My_Calendar(filename, account, password)
+        t = My_Calendar(filename, account, password)
         t.gen_cal()
         directory = os.getcwd()
         response = make_response(send_from_directory(
             directory, filename, as_attachment=True))
         return response
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('hut.login'))
 
-
-@app.route('/signout')
+ 
+@hut.route('/signout')
 def signout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('hut.login'))
