@@ -543,7 +543,7 @@ if __name__ == '__main__':
     # with open('kb.json', 'w', encoding='utf8') as f:
     #     json.dump(t.gen_Kb_json_data(), f, ensure_ascii=False)
     t = Electricity_Fee_Inquiry()
-    ld_data = t.getJzinfo(2, 4)
+    ld_data = t.getJzinfo(4, 4, 1126,-1)
     print(ld_data)
     # ld = '25'
     # for room in ld_data['roomlist']:

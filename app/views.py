@@ -124,12 +124,14 @@ def electricity_fee_inquiry():
     ld_data = elec.getJzinfo(2, 4)
     if ld not in ('36', '37', '38'):
         ld_name = '学生公寓' + str(ld) + '栋'
+        qs_name = qs
     else:
         ld_name = '学生宿舍' + str(ld) + '栋'
+        qs_name = ld + '-' + qs
     print(ld_name)
     if ld_data['code'] == 'SUCCESS':
         print(ld_data['msg'])
-        print(ld_data['roomlist'])
+        # print(ld_data['roomlist'])
         buildid = None
         for room in ld_data['roomlist']:
             if ld_name == room['name']:
@@ -143,7 +145,7 @@ def electricity_fee_inquiry():
     if qs_data['code'] == 'SUCCESS':
         print(qs_data['msg'])
         for room in qs_data['roomlist']:
-            if qs == room['name']:
+            if qs_name == room['name']:
                 qsid = room['id']
     else:
         return qs_data['msg']
@@ -158,4 +160,4 @@ def electricity_fee_inquiry():
     req = requests.get(url, params=params,
                        timeout=5, headers=elec.HEADERS)
     res = json.loads(req.text)
-    return (xh + '校区 ' + ld + '栋' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
+    return (xh + '校区 ' + ld + '栋 ' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
