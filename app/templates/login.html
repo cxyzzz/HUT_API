@@ -10,6 +10,33 @@
 {{super()}}
 <link href="/static/login.css" rel="stylesheet">
 {% endblock %}
+
+<script>
+    function loadCss(l) {
+        var d = document,
+            h = d.head,
+            s = d.createElement('link');
+        s.rel = 'stylesheet';
+        s.href = l;
+        ! function e(f) {
+            if (d.body) return f();
+            setTimeout(function () {
+                e(f)
+            })
+        }(function () {
+            h.appendChild(s);
+        });
+    }
+    loadCss(
+        '//fonts.loli.net/css?family=Lato:300,300italic,400,400italic,700,700italic|Noto Serif SC:300,300italic,400,400italic,700,700italic|Roboto Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext'
+    );
+    loadCss('//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css');
+</script>
+<noscript>
+    <link rel="stylesheet"
+        href="//fonts.loli.net/css?family=Lato:300,300italic,400,400italic,700,700italic|Noto Serif SC:300,300italic,400,400italic,700,700italic|Roboto Mono:300,300italic,400,400italic,700,700italic&amp;display=swap&amp;subset=latin,latin-ext">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+</noscript>
 {% endblock %}
 
 
@@ -29,6 +56,7 @@
     {% endif %}
     {% endwith %}
     <form class="form-signin" method="POST" action="/login" align="center">
+        <img class="site-author-image" itemprop="image" src="/static/images/avatar.png" alt="𝐂𝐡𝐞𝐧">
         <h2 class="form-signin-heading">Please sign in</h2>
         {{ form.csrf_token() }}
         {{ form.account.label(class="sr-only") }}
@@ -37,7 +65,27 @@
         {{ form.password(class="form-control",placeholder='密码') }}
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
+    <footer id="footer" class="footer" align="center">
+        <div class="footer-inner">
+            <div class="copyright">©
+                <span itemprop="copyrightYear">2019</span>
+                <span class="with-love" id="animate">
+                    <i class="fa fa-heart"></i>
+                </span>
+                <span class="author" itemprop="copyrightHolder">𝐂𝐡𝐞𝐧</span>
+            </div>
+            <div class="busuanzi-count">
+                <script pjax="" async="" src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                <span class="post-meta-item-icon"><i class="fa fa-user-secret"></i> </span><span class="site-uv"
+                    title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span> </span><span
+                    class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-eye"></i>
+                </span><span class="site-pv" title="总访问量"><span class="busuanzi-value"
+                        id="busuanzi_value_site_pv"></span></span>
+            </div>
+        </div>
+    </footer>
 </div>
+
 {% block scripts %}
 {{ super() }}
 <script src="//cdn.jsdelivr.net/gh/cxyzzz/CDN@19.7.19a/js/activate-power-mode.js"></script>
