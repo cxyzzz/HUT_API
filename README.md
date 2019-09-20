@@ -1,11 +1,12 @@
-# GDUF-QZAPI
+# HUT-API
 
-HUT 强智教务系统 API  
+## HUT 强智教务系统 API  
+
 参考 <https://github.com/TLingC/QZAPI>
 
-## API列表
+### API列表
 
-### authUser
+#### authUser
 
 登录帐号  
 `http://218.75.197.123:83/app.do?method=authUser&xh=学号&pwd=密码`
@@ -26,7 +27,7 @@ userrealname: 用户姓名
 
 之后的查询均需携带 Token
 
-### getStudentIdInfo
+#### getStudentIdInfo
 
 ~~获取学号信息(已禁止查询)  
 `http://218.75.197.123:83/app.do?method=getStudentIdInfo&xh=#学号#`~~
@@ -39,7 +40,7 @@ ndzyid：未知
 yxid：未知  
 xxdm：未知
 
-### getCurrentTime
+#### getCurrentTime
 
 获取当前时间、周次、学年等信息  
 `http://218.75.197.123:83/app.do?method=getCurrentTime&currDate=#查询日期#`
@@ -52,7 +53,7 @@ s_time: 周开始时间
 xnxqh: 学年  
 zc: 周次
 
-### getKbcxAzc
+#### getKbcxAzc
 
 获取课程表  
 `http://218.75.197.123:83/app.do?method=getKbcxAzc&xh=#学号#&xnxqid=#学年#&zc=#周次#`
@@ -69,7 +70,7 @@ kcsj: 课程时间（eg: 50304 表示星期五第3-4节）
 kssj: 上课时间  
 sjbz: 未知
 
-### getXqcx
+#### getXqcx
 
 获取校区  
 `http://218.75.197.123:83/app.do?method=getXqcx`
@@ -80,7 +81,7 @@ sjbz: 未知
 >xqid: 校区 iD  
 xqmc: 校区名称  
 
-### getJxlcx
+#### getJxlcx
 
 获取校区教学楼信息  
 `http://218.75.197.123:83/app.do?method=getJxlcx&xqid=#校区ID#`
@@ -91,7 +92,7 @@ xqmc: 校区名称
 >jzwid: 教学楼 ID  
 jzwmc: 教学楼名称
 
-### getKxJscx
+#### getKxJscx
 
 获取空教室  
 `http://218.75.197.123:83/app.do?method=getKxJscx&time=#查询日期#&idleTime=#见下方说明#&xqid=#校区ID#&jxlid=#教学楼ID#&classroomNumber=_#可容纳人数，见下方说明#`
@@ -125,7 +126,7 @@ jxl: 教学楼
 success: 状态  
 xnxqid: 学年  
 
-### getUserInfo
+#### getUserInfo
 
 获取帐号信息  
 `http://218.75.197.123:83/app.do?method=getUserInfo&xh=#学号#`
@@ -150,7 +151,7 @@ xz: 未知
 yxmc：院系名称  
 zymc：专业名称
 
-### getXnxq
+#### getXnxq
 
 获取学年和学期信息  
 `http://218.75.197.123:83/app.do?method=getXnxq&xh=#学号#`
@@ -162,7 +163,7 @@ zymc：专业名称
 xnxq01id: 学年id  
 xqmc: 学年名称  
 
-### getCjcx
+#### getCjcx
 
 获取成绩信息  
 `http://218.75.197.123:83/app.do?method=getCjcx&xh=#学号#&xnxqid=#学期学年ID#`
@@ -183,7 +184,7 @@ xqmc: 学期名称
 zcj: 总成绩  
 success: 状态  
 
-### getKscx
+#### getKscx
 
 获取考试信息  
 `http://218.75.197.123:83/app.do?method=getKscx&xh=#学号#`
@@ -191,7 +192,7 @@ success: 状态
 **返回值**  
 条件所限，尚未明晰
 
-### getEarlyWarnInfo
+#### getEarlyWarnInfo
 
 获取学籍预警信息  
 `http://218.75.197.123:83/app.do?method=getEarlyWarnInfo&xh=#学号#&history=#见下方说明#`
@@ -203,9 +204,9 @@ success: 状态
 **返回值**  
 条件所限，尚未明晰
 
-## Python 示例
+### Python 示例
 
-### 安装
+#### 安装
 
 1. 使用 pip  
 `pip install -r requerments.txt`
@@ -213,7 +214,7 @@ success: 状态
 2. 使用 [pipenv](https://docs.pipenv.org)  
 `pipenv install`
 
-### 使用
+#### 使用
 
 1,2任选一个
 
@@ -221,11 +222,56 @@ success: 状态
 `export ACCOUNT=#你的学号#`
 `export PASSWORD=#密码#`
 
-2. 修改文件末尾的`account = os.getenv('ACCOUNT') password = os.getenv('PASSWORD')` 把等于号后面的替换为你的学号以及密码
+2. 修改文件中的`account = os.getenv('ACCOUNT') password = os.getenv('PASSWORD')` 把等于号后面的替换为你的学号以及密码
 
-### 功能
+#### 功能
 
 1. 支持导出课表为 ics 日历文件
 
 2. WEB 展示(不会前端，暂未完善)
 ![Screenshot_20190910_212948.png](https://i.loli.net/2019/09/10/Ns3qxcToGBQblIv.png)
+
+
+## 电费查询
+
+### getJzinfo
+
+`http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoom.do?payProId=#支付订单ID#&schoolcode=#学校代码#&optype=#状态码#&areaid=#校区ID#&buildid=#楼栋ID#&unitid=#单元ID#&levelid=#等级ID#&businesstype=#业务类型#`
+
+以下查询中不变的值：
+`payProId` 随机生成一个整数即可
+`schoolcode` 为学校代码，请自行查询
+`businesstype=2`
+
+#### 获取校区信息
+
+>optype=1  
+arieaid=0  
+buildid=0  
+unitid=0  
+levelid=0  
+
+#### 获取楼栋信息
+
+>optype=2  
+areaid=#从前面获取到的校区信息中查找#  
+buildid=0  
+unitid=0  
+levelid=0  
+
+#### 获取寝室信息
+
+>optype=4  
+areaid=#从前面获取到的校区信息中查找#  
+buildid=#从前面获取到的楼栋信息中查找#  
+unitid=0  
+levelid=-1  
+
+### 查询电费
+
+`http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoomState.do?payProId=#订单ID#&schoolcode=#学校ID#&businesstype=#业务类型#&roomverify=#寝室编号#`
+
+>payProId 随机生成一个整数即可  
+schoolcode 为学校代码，请自行查询  
+businesstype=2  
+roomverify #从前面获取到的寝室信息中查找#

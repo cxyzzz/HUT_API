@@ -9,7 +9,7 @@ import json
 import sys
 import uuid
 from datetime import datetime, timedelta
-
+from random import randint
 import pytz
 import os
 import requests
@@ -419,7 +419,8 @@ class My_Calendar(object):
         self.account = account      # 账号，默认使用全局变量 account
         self.password = password    # 密码，默认使用全局变量 password
         self.student = Student(self.account, self.password)
-        self.data = self.student.gen_Kb_json_data() if (data == -1) else data     # 所有课程的 json 数据
+        self.data = self.student.gen_Kb_json_data() if (
+            data == -1) else data     # 所有课程的 json 数据
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
 
@@ -495,6 +496,45 @@ class My_Calendar(object):
             f.write(str(cal.to_ical(), encoding='utf8'))
 
 
+class Electricity_Fee_Inquiry(object):
+    url = 'http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoom.do'
+    HEADERS = {
+        'User-Agent': ('Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/PKQ1.180904.001; wv) '
+                       'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
+                       'Chrome/74.0.3729.157 Mobile Safari/537.36 Wanxiao/5.0.2'),
+        'Referer': 'http://h5cloud.17wanxiao.com:8080/CloudPayment/bill/selectPayProject.do?txcode=elecdetails&interurl=elecdetails&payProId=1567&amtflag=0&payamt=0&payproname=%E8%B4%AD%E7%94%B5%E6%94%AF%E5%87%BA&img=https://cloud.59wanmei.com:8443/CapecYunPay/images/project/img-nav_2.png&subPayProId=',
+        'accept-encoding': 'gzip, deflate'
+    }
+
+    def __init__(self):
+        self.payProId = randint(1, 10000)
+
+    def get_data(self, params):
+        req = requests.get(self.url, params=params,
+                           timeout=5, headers=self.HEADERS)
+        res = json.loads(req.text)
+        return res
+
+    def getJzinfo(self, optype=1, arieaid=0, buildid=0, levelid=0):
+        """
+            获取编号
+            arieaid: 校区 id
+            buildid： 楼栋 id
+        """
+        params = {
+            'payProId': self.payProId,
+            'schoolcode': 786,
+            'optype': optype,
+            'areaid': arieaid,
+            'buildid': buildid,
+            'unitid': 0,
+            'levelid': levelid,
+            'businesstype': 2
+        }
+        res = self.get_data(params)
+        return res
+
+
 if __name__ == '__main__':
     # test = Student(account, password)
     # a = test.gen_Kb_json_data()
@@ -502,4 +542,10 @@ if __name__ == '__main__':
     # t.gen_cal()
     # with open('kb.json', 'w', encoding='utf8') as f:
     #     json.dump(t.gen_Kb_json_data(), f, ensure_ascii=False)
+    t = Electricity_Fee_Inquiry()
+    ld_data = t.getJzinfo(2, 4)
+    ld = '25'
+    for room in ld_data['roomlist']:
+        if ('学生公寓' + str(ld) + '栋') == room['name']:
+            buildid = room['id']
     pass
