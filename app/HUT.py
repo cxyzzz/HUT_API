@@ -544,8 +544,9 @@ if __name__ == '__main__':
     #     json.dump(t.gen_Kb_json_data(), f, ensure_ascii=False)
     t = Electricity_Fee_Inquiry()
     ld_data = t.getJzinfo(2, 4)
-    ld = '25'
-    for room in ld_data['roomlist']:
-        if ('学生公寓' + str(ld) + '栋') == room['name']:
-            buildid = room['id']
+    print(ld_data)
+    # ld = '25'
+    # for room in ld_data['roomlist']:
+    #     if ('学生公寓' + str(ld) + '栋') == room['name']:
+    #         buildid = room['id']
     pass

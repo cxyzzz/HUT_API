@@ -122,10 +122,17 @@ def electricity_fee_inquiry():
             areaid = '4'
 
     ld_data = elec.getJzinfo(2, 4)
+    if ld not in ('36', '37', '38'):
+        ld_name = '学生公寓' + str(ld) + '栋'
+    else:
+        ld_name = '学生宿舍' + str(ld) + '栋'
+    print(ld_name)
     if ld_data['code'] == 'SUCCESS':
         print(ld_data['msg'])
+        print(ld_data['roomlist'])
+        buildid = None
         for room in ld_data['roomlist']:
-            if ('学生公寓' + str(ld) + '栋') == room['name']:
+            if ld_name == room['name']:
                 buildid = room['id']
         if not buildid:
             return "未找到当前楼栋，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
