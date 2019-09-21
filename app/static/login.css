@@ -6,14 +6,21 @@ body {
     align-items: center;
     background-color: #f5f5f5;
 }
+
 .container {
-        padding-top: 10px;
-        padding-bottom: 80px;
+    background-image: url(https://i.loli.net/2019/09/21/TlbUpBmLxsVr8WC.jpg) !important;
+    /* background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%); */
+    background-size: cover;
+    background-position: top;
+    background-attachment: fixed;
+    background-repeat: repeat;
 
 }
+
 .form-signin-heading {
     margin-bottom: 2rem;
 }
+
 .form-signin {
     width: 100%;
     max-width: 370px;
@@ -45,19 +52,23 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
 .footer {
     font-size: 16px;
     padding: 50px;
 }
+
 .footer-inner {
     font-family: 'Comic Sans MS', Playball;
     text-align: center;
     color: #4b5cc4;
 }
+
 #animate {
     -webkit-animation: iconAnimate 1.33s ease-in-out infinite;
     animation: iconAnimate 1.33s ease-in-out infinite;
 }
+
 .with-love {
     color: #ffbbd6;
     display: inline-block;

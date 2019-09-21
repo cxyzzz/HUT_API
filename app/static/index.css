@@ -19,6 +19,14 @@ body {
     font-size: 1em;
     line-height: 2
 }
+.container {
+    background-image: url(https://i.loli.net/2019/09/21/TlbUpBmLxsVr8WC.jpg) !important;
+    /* background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%); */
+    background-size: cover;
+    background-position: top;
+    background-attachment: fixed;
+    background-repeat: repeat;
+}
 
 .curriculum {
     border-radius: 8px;

@@ -43,759 +43,760 @@
 </head>
 
 <body>
-    <h3 id="总课表" align="center">
-        <a href="#总课表" class="headerlink" title="总课表"></a>
-        总课表
-        <a class="fa fa-calendar" href="/gen_cal" title="点击下载课表日历文件"></a>
-    </h3>
+    <div class="container">
+        <h3 id="总课表" align="center">
+            <a href="#总课表" class="headerlink" title="总课表"></a>
+            总课表
+            <a class="fa fa-calendar" href="/gen_cal" title="点击下载课表日历文件"></a>
+        </h3>
 
-    <div id="user-info" align="center">
-        <a class="fa fa-user" href="/signout" title="点击退出登录"></a>
-        <font title="学院">{{ user.yxmc }}</font>
-        <font title="班级">{{ user.bj }}</font>
-        <font title="姓名">{{ user.xm }}</font>
-        <font title="学号">{{ user.xh }}</font>
-    </div>
-    <table id="kbtable" align="center" border="1" cellspacing="0" cellpadding="0" class="curriculum">
-        <tbody>
-            <tr>
-                <th>&nbsp;</th>
-                <th>星期一</th>
-                <th>星期二</th>
-                <th>星期三</th>
-                <th width="124" height="28">星期四</th>
-                <th width="124" height="28">星期五</th>
-                <th width="124" height="28">星期六</th>
-                <th width="124" height="28">星期日</th>
-            </tr>
-            <tr>
-                <th>第一大节&nbsp;</th>
-                <td>
-                    <div id="1-1" class="kbcontent">
-                        {% if kb1_1 != '&nbsp;' %}
-                        {{ kb1_1.kcmc }}<br>
-                        <font title="老师">{{ kb1_1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_1.jsmc }}</font><br>
-                        {% if kb1_1.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb1_1.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb1_1.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_1.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_1.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb1_1 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="2-1" class="kbcontent">
-                        {% if kb2_1 != '&nbsp;' %}
-                        {{ kb2_1.kcmc }}<br>
-                        <font title="老师">{{ kb2_1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_1.jsmc }}</font><br>
-                        {% if kb2_1.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb2_1.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb2_1.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_1.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_1.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb2_1 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="3-1" class="kbcontent">
-                        {% if kb3_1 != '&nbsp;' %}
-                        {{ kb3_1.kcmc }}<br>
-                        <font title="老师">{{ kb3_1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_1.jsmc }}</font><br>
-                        {% if kb3_1.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb3_1.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb3_1.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_1.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_1.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb3_1 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="4-1" class="kbcontent">
-                        {% if kb4_1 != '&nbsp;' %}
-                        {{ kb4_1.kcmc }}<br>
-                        <font title="老师">{{ kb4_1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_1.jsmc }}</font><br>
-                        {% if kb4_1.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb4_1.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb4_1.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_1.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_1.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb4_1 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="5-1" class="kbcontent">
-                        {% if kb5_1 != '&nbsp;' %}
-                        {{ kb5_1.kcmc }}<br>
-                        <font title="老师">{{ kb5_1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_1.jsmc }}</font><br>
-                        {% if kb5_1.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb5_1.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb5_1.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_1.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_1.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb5_1 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="6-1" class="kbcontent">
-                        {% if kb6_1 != '&nbsp;' %}
-                        {{ kb6_1.kcmc }}<br>
-                        <font title="老师">{{ kb6_1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_1.jsmc }}</font><br>
-                        {% if kb6_1.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb6_1.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb6_1.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_1.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_1.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb6_1 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="7-1" class="kbcontent">
-                        {% if kb7_1 != '&nbsp;' %}
-                        {{ kb7_1.kcmc }}<br>
-                        <font title="老师">{{ kb7_1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_1.jsmc }}</font><br>
-                        {% if kb7_1.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb7_1.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb7_1.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_1.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_1.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb7_1 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th>第二大节&nbsp;</th>
-                <td>
-                    <div id="1-2" class="kbcontent">
-                        {% if kb1_2 != '&nbsp;' %}
-                        {{ kb1_2.kcmc }}<br>
-                        <font title="老师">{{ kb1_2.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_2.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_2.jsmc }}</font><br>
-                        {% if kb1_2.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb1_2.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb1_2.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_2.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_2.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb1_2 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="2-2" class="kbcontent">
-                        {% if kb2_2 != '&nbsp;' %}
-                        {{ kb2_2.kcmc }}<br>
-                        <font title="老师">{{ kb2_2.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_2.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_2.jsmc }}</font><br>
-                        {% if kb2_2.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb2_2.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb2_2.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_2.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_2.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb2_2 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="3-2" class="kbcontent">
-                        {% if kb3_2 != '&nbsp;' %}
-                        {{ kb3_2.kcmc }}<br>
-                        <font title="老师">{{ kb3_2.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_2.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_2.jsmc }}</font><br>
-                        {% if kb3_2.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb3_2.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb3_2.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_2.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_2.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb3_2 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="4-2" class="kbcontent">
-                        {% if kb4_2 != '&nbsp;' %}
-                        {{ kb4_2.kcmc }}<br>
-                        <font title="老师">{{ kb4_2.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_2.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_2.jsmc }}</font><br>
-                        {% if kb4_2.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb4_2.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb4_2.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_2.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_2.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb4_2 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="5-2" class="kbcontent">
-                        {% if kb5_2 != '&nbsp;' %}
-                        {{ kb5_2.kcmc }}<br>
-                        <font title="老师">{{ kb5_2.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_2.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_2.jsmc }}</font><br>
-                        {% if kb5_2.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb5_2.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb5_2.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_2.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_2.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb5_2 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="6-2" class="kbcontent">
-                        {% if kb6_2 != '&nbsp;' %}
-                        {{ kb6_2.kcmc }}<br>
-                        <font title="老师">{{ kb6_2.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_2.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_2.jsmc }}</font><br>
-                        {% if kb6_2.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb6_2.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb6_2.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_2.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_2.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb6_2 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="7-2" class="kbcontent">
-                        {% if kb7_2 != '&nbsp;' %}
-                        {{ kb7_2.kcmc }}<br>
-                        <font title="老师">{{ kb7_2.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_2.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_2.jsmc }}</font><br>
-                        {% if kb7_2.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb7_2.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb7_2.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_2.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_2.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb7_2 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th>第三大节&nbsp;</th>
-                <td>
-                    <div id="1-3" class="kbcontent">
-                        {% if kb1_3 != '&nbsp;' %}
-                        {{ kb1_3.kcmc }}<br>
-                        <font title="老师">{{ kb1_3.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_3.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_3.jsmc }}</font><br>
-                        {% if kb1_3.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb1_3.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb1_3.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_3.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_3.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb1_3 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="2-3" class="kbcontent">
-                        {% if kb2_3 != '&nbsp;' %}
-                        {{ kb2_3.kcmc }}<br>
-                        <font title="老师">{{ kb2_3.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_3.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_3.jsmc }}</font><br>
-                        {% if kb2_3.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb2_3.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb2_3.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_3.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_3.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb2_3 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="3-3" class="kbcontent">
-                        {% if kb3_3 != '&nbsp;' %}
-                        {{ kb3_3.kcmc }}<br>
-                        <font title="老师">{{ kb3_3.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_3.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_3.jsmc }}</font><br>
-                        {% if kb3_3.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb3_3.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb3_3.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_3.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_3.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb3_3 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="4-3" class="kbcontent">
-                        {% if kb4_3 != '&nbsp;' %}
-                        {{ kb4_3.kcmc }}<br>
-                        <font title="老师">{{ kb4_3.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_3.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_3.jsmc }}</font><br>
-                        {% if kb4_3.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb4_3.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb4_3.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_3.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_3.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb4_3 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="5-3" class="kbcontent">
-                        {% if kb5_3 != '&nbsp;' %}
-                        {{ kb5_3.kcmc }}<br>
-                        <font title="老师">{{ kb5_3.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_3.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_3.jsmc }}</font><br>
-                        {% if kb5_3.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb5_3.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb5_3.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_3.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_3.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb5_3 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="6-3" class="kbcontent">
-                        {% if kb6_3 != '&nbsp;' %}
-                        {{ kb6_3.kcmc }}<br>
-                        <font title="老师">{{ kb6_3.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_3.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_3.jsmc }}</font><br>
-                        {% if kb6_3.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb6_3.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb6_3.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_3.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_3.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb6_3 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="7-3" class="kbcontent">
-                        {% if kb7_3 != '&nbsp;' %}
-                        {{ kb7_3.kcmc }}<br>
-                        <font title="老师">{{ kb7_3.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_3.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_3.jsmc }}</font><br>
-                        {% if kb7_3.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb7_3.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb7_3.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_3.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_3.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb7_3 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th>第四大节&nbsp;</th>
-                <td>
-                    <div id="1-4" class="kbcontent">
-                        {% if kb1_4 != '&nbsp;' %}
-                        {{ kb1_4.kcmc }}<br>
-                        <font title="老师">{{ kb1_4.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_4.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_4.jsmc }}</font><br>
-                        {% if kb1_4.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb1_4.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb1_4.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb1_4.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb1_4.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb1_4 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="2-4" class="kbcontent">
-                        {% if kb2_4 != '&nbsp;' %}
-                        {{ kb2_4.kcmc }}<br>
-                        <font title="老师">{{ kb2_4.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_4.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_4.jsmc }}</font><br>
-                        {% if kb2_4.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb2_4.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb2_4.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb2_4.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb2_4.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb2_4 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="3-4" class="kbcontent">
-                        {% if kb3_4 != '&nbsp;' %}
-                        {{ kb3_4.kcmc }}<br>
-                        <font title="老师">{{ kb3_4.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_4.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_4.jsmc }}</font><br>
-                        {% if kb3_4.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb3_4.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb3_4.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb3_4.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb3_4.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb3_4 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="4-4" class="kbcontent">
-                        {% if kb4_4 != '&nbsp;' %}
-                        {{ kb4_4.kcmc }}<br>
-                        <font title="老师">{{ kb4_4.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_4.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_4.jsmc }}</font><br>
-                        {% if kb4_4.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb4_4.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb4_4.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb4_4.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb4_4.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb4_4 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="5-4" class="kbcontent">
-                        {% if kb5_4 != '&nbsp;' %}
-                        {{ kb5_4.kcmc }}<br>
-                        <font title="老师">{{ kb5_4.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_4.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_4.jsmc }}</font><br>
-                        {% if kb5_4.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb5_4.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb5_4.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb5_4.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb5_4.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb5_4 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="6-4" class="kbcontent">
-                        {% if kb6_4 != '&nbsp;' %}
-                        {{ kb6_4.kcmc }}<br>
-                        <font title="老师">{{ kb6_4.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_4.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_4.jsmc }}</font><br>
-                        {% if kb6_4.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb6_4.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb6_4.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb6_4.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb6_4.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb6_4 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
-                    <div id="7-4" class="kbcontent">
-                        {% if kb7_4 != '&nbsp;' %}
-                        {{ kb7_4.kcmc }}<br>
-                        <font title="老师">{{ kb7_4.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_4.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_4.jsmc }}</font><br>
-                        {% if kb7_4.multy != 0 %}
-                        ---------------------<br>
-                        {{ kb7_4.multy1.kcmc }}<br>
-                        <font title="老师">{{ kb7_4.multy1.jsxm }}</font><br>
-                        <font title="周次(节次)">{{ kb7_4.multy1.kkzc }}(周)</font><br>
-                        <font title="教室">{{ kb7_4.multy1.jsmc }}</font><br>
-                        {% endif %}
-                        {% else %}
-                        {{ kb7_4 | safe }}
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <th>第五大节&nbsp;</th>
-                <td>
-                    <div id="1-5" class="kbcontent">&nbsp;</div>
-                </td>
-                <td>
-                    <div id="2-5" class="kbcontent">&nbsp;</div>
-                </td>
-                <td>
-                    <div id="3-5" class="kbcontent">&nbsp;</div>
-                </td>
-                <td>
-                    <div id="4-5" class="kbcontent">&nbsp;</div>
-                </td>
-                <td>
-                    <div id="5-5" class="kbcontent">&nbsp;</div>
-                </td>
-                <td>
-                    <div id="6-5" class="kbcontent">&nbsp;</div>
-                </td>
-                <td>
-                    <div id="7-5" class="kbcontent">&nbsp;</div>
-                </td>
-            </tr>
-            <tr>
-                <th>备注:</th>
-                <td colspan="7" align="left">综合实习 陈卫兵 17-18周;嵌入式系统 1-8周;DSP应用技术 1-8周;LTE技术与实践
-                    1-10周;现代光通信网络
-                    1-10周;嵌入式系统课程设计 叶玮琼 16周;DSP应用技术课程设计 龙永新 14周;LTE技术与实践课程设计 刘立 15周;通信网络的规划设计与维护 1-8周;
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="post-widgets">
-        <div id="needsharebutton-postbottom">
-            <span class="btn">
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </span>
+        <div id="user-info" align="center">
+            <a class="fa fa-user" href="/signout" title="点击退出登录"></a>
+            <font title="学院">{{ user.yxmc }}</font>
+            <font title="班级">{{ user.bj }}</font>
+            <font title="姓名">{{ user.xm }}</font>
+            <font title="学号">{{ user.xh }}</font>
         </div>
-    </div>
-
-    <div id="reward-container">
-        <div></div><button id="reward-button" disable="enable"
-            onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">打赏</button>
-        <div id="qr" style="display:none">
-            <div style="display:inline-block"><img src="/static/images/wechatpay.png" alt="𝐂𝐡𝐞𝐧 微信支付">
-                <p>微信支付</p>
-            </div>
-            <div style="display:inline-block"><img src="/static/images/alipay.png" alt="𝐂𝐡𝐞𝐧 支付宝">
-                <p>支付宝</p>
-            </div>
-        </div>
-    </div>
-    <div class="comment"></div>
-
-    <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
-    <script src="//cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-    <script src="//cdnjs.loli.net/ajax/libs/lozad.js/1.9.0/lozad.min.js"></script>
-
-    <script>
-        var pjax = new Pjax({
-            selectors: [
-                'head title',
-                '#page-configurations',
-                '.content-wrap',
-                '.post-toc-wrap',
-                '#pjax'
-            ],
-            switches: {
-                '.post-toc-wrap': Pjax.switches.innerHTML
-            },
-            analytics: false,
-            cacheBust: false,
-        });
-
-        window.addEventListener('pjax:success', () => {
-            document.querySelectorAll('script[pjax], script#page-configurations, #pjax script').forEach(
-                element => {
-                    var id = element.id || '';
-                    var src = element.src || '';
-                    var code = element.text || element.textContent || element.innerHTML || '';
-                    var parent = element.parentNode;
-                    parent.removeChild(element);
-                    var script = document.createElement('script');
-                    if (id !== '') {
-                        script.id = element.id;
-                    }
-                    if (src !== '') {
-                        script.src = src;
-                        // Force synchronous loading of peripheral JS.
-                        script.async = false;
-                    }
-                    if (code !== '') {
-                        script.appendChild(document.createTextNode(code));
-                    }
-                    parent.appendChild(script);
-                });
-            NexT.boot.refresh();
-            // Define Motion Sequence & Bootstrap Motion.
-            if (CONFIG.motion.enable) {
-                NexT.motion.integrator
-                    .init()
-                    .add(NexT.motion.middleWares.postList)
-                    .bootstrap();
-            }
-            NexT.utils.updateSidebarPosition();
-        });
-    </script>
-    <div id="pjax">
-        <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
-        <script>
-            pbOptions = {
-                iconStyle: "box",
-                boxForm: "horizontal",
-                position: "bottomCenter",
-                networks: "Weibo,Wechat,Douban,QQZone,Twitter,Facebook"
-            }, new needShareButton("#needsharebutton-postbottom", pbOptions)
-        </script>
-
-        <script src="//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js"></script>
-        <script>
-            var GUEST = ['nick', 'mail', 'link'];
-            var guest = 'nick,mail,link';
-            guest = guest.split(',').filter(item => {
-                return GUEST.includes(item);
-            });
-            new Valine({
-                el: '#comments',
-                verify: false,
-                notify: false,
-                appId: 'W0aszG0X0SsIHQvIWYSrC969-gzGzoHsz',
-                appKey: 'ozjSCfjt66qIMInckgP8YzkB',
-                placeholder: 'Just go go \n (建议填写邮箱，有回复后将会通过邮件通知)',
-                avatar: 'retro',
-                meta: guest,
-                pageSize: '10' || 10,
-                visitor: true,
-                lang: '' || 'zh-cn',
-                path: location.pathname
-            });
-        </script>
-    </div>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/gh/cxyzzz/CDN@19.7.19a/js/love.js"></script>
-    <script type="text/javascript">
-        var OriginTitile = document.title;
-        var titleTime;
-        document.addEventListener('visibilitychange', function () {
-            if (document.hidden) {
-                $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
-                document.title = '╭(°A°`)╮ 页面崩溃啦 ~';
-                clearTimeout(titleTime);
-            } else {
-                $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
-                document.title = '(ฅ>ω<*ฅ) 噫又好了~' + OriginTitile;
-                titleTime = setTimeout(function () {
-                        document.title = OriginTitile;
-                    },
-                    2000);
-            }
-        });
-    </script>
-    </script>
-    
-    <footer id="footer" class="footer">
-        <div class="footer-inner">
-            <div class="copyright">© 
-                <span itemprop="copyrightYear">2019</span> 
-                <span class="with-love" id="animate">
-                    <i class="fa fa-heart"></i> 
+        <table id="kbtable" align="center" border="1" cellspacing="0" cellpadding="0" class="curriculum">
+            <tbody>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>星期一</th>
+                    <th>星期二</th>
+                    <th>星期三</th>
+                    <th width="124" height="28">星期四</th>
+                    <th width="124" height="28">星期五</th>
+                    <th width="124" height="28">星期六</th>
+                    <th width="124" height="28">星期日</th>
+                </tr>
+                <tr>
+                    <th>第一大节&nbsp;</th>
+                    <td>
+                        <div id="1-1" class="kbcontent">
+                            {% if kb1_1 != '&nbsp;' %}
+                            {{ kb1_1.kcmc }}<br>
+                            <font title="老师">{{ kb1_1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_1.jsmc }}</font><br>
+                            {% if kb1_1.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb1_1.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb1_1.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_1.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_1.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb1_1 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="2-1" class="kbcontent">
+                            {% if kb2_1 != '&nbsp;' %}
+                            {{ kb2_1.kcmc }}<br>
+                            <font title="老师">{{ kb2_1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_1.jsmc }}</font><br>
+                            {% if kb2_1.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb2_1.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb2_1.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_1.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_1.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb2_1 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="3-1" class="kbcontent">
+                            {% if kb3_1 != '&nbsp;' %}
+                            {{ kb3_1.kcmc }}<br>
+                            <font title="老师">{{ kb3_1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_1.jsmc }}</font><br>
+                            {% if kb3_1.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb3_1.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb3_1.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_1.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_1.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb3_1 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="4-1" class="kbcontent">
+                            {% if kb4_1 != '&nbsp;' %}
+                            {{ kb4_1.kcmc }}<br>
+                            <font title="老师">{{ kb4_1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_1.jsmc }}</font><br>
+                            {% if kb4_1.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb4_1.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb4_1.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_1.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_1.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb4_1 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="5-1" class="kbcontent">
+                            {% if kb5_1 != '&nbsp;' %}
+                            {{ kb5_1.kcmc }}<br>
+                            <font title="老师">{{ kb5_1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_1.jsmc }}</font><br>
+                            {% if kb5_1.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb5_1.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb5_1.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_1.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_1.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb5_1 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="6-1" class="kbcontent">
+                            {% if kb6_1 != '&nbsp;' %}
+                            {{ kb6_1.kcmc }}<br>
+                            <font title="老师">{{ kb6_1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_1.jsmc }}</font><br>
+                            {% if kb6_1.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb6_1.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb6_1.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_1.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_1.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb6_1 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="7-1" class="kbcontent">
+                            {% if kb7_1 != '&nbsp;' %}
+                            {{ kb7_1.kcmc }}<br>
+                            <font title="老师">{{ kb7_1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_1.jsmc }}</font><br>
+                            {% if kb7_1.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb7_1.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb7_1.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_1.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_1.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb7_1 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>第二大节&nbsp;</th>
+                    <td>
+                        <div id="1-2" class="kbcontent">
+                            {% if kb1_2 != '&nbsp;' %}
+                            {{ kb1_2.kcmc }}<br>
+                            <font title="老师">{{ kb1_2.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_2.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_2.jsmc }}</font><br>
+                            {% if kb1_2.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb1_2.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb1_2.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_2.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_2.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb1_2 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="2-2" class="kbcontent">
+                            {% if kb2_2 != '&nbsp;' %}
+                            {{ kb2_2.kcmc }}<br>
+                            <font title="老师">{{ kb2_2.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_2.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_2.jsmc }}</font><br>
+                            {% if kb2_2.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb2_2.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb2_2.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_2.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_2.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb2_2 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="3-2" class="kbcontent">
+                            {% if kb3_2 != '&nbsp;' %}
+                            {{ kb3_2.kcmc }}<br>
+                            <font title="老师">{{ kb3_2.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_2.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_2.jsmc }}</font><br>
+                            {% if kb3_2.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb3_2.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb3_2.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_2.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_2.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb3_2 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="4-2" class="kbcontent">
+                            {% if kb4_2 != '&nbsp;' %}
+                            {{ kb4_2.kcmc }}<br>
+                            <font title="老师">{{ kb4_2.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_2.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_2.jsmc }}</font><br>
+                            {% if kb4_2.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb4_2.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb4_2.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_2.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_2.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb4_2 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="5-2" class="kbcontent">
+                            {% if kb5_2 != '&nbsp;' %}
+                            {{ kb5_2.kcmc }}<br>
+                            <font title="老师">{{ kb5_2.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_2.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_2.jsmc }}</font><br>
+                            {% if kb5_2.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb5_2.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb5_2.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_2.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_2.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb5_2 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="6-2" class="kbcontent">
+                            {% if kb6_2 != '&nbsp;' %}
+                            {{ kb6_2.kcmc }}<br>
+                            <font title="老师">{{ kb6_2.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_2.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_2.jsmc }}</font><br>
+                            {% if kb6_2.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb6_2.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb6_2.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_2.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_2.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb6_2 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="7-2" class="kbcontent">
+                            {% if kb7_2 != '&nbsp;' %}
+                            {{ kb7_2.kcmc }}<br>
+                            <font title="老师">{{ kb7_2.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_2.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_2.jsmc }}</font><br>
+                            {% if kb7_2.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb7_2.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb7_2.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_2.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_2.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb7_2 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>第三大节&nbsp;</th>
+                    <td>
+                        <div id="1-3" class="kbcontent">
+                            {% if kb1_3 != '&nbsp;' %}
+                            {{ kb1_3.kcmc }}<br>
+                            <font title="老师">{{ kb1_3.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_3.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_3.jsmc }}</font><br>
+                            {% if kb1_3.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb1_3.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb1_3.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_3.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_3.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb1_3 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="2-3" class="kbcontent">
+                            {% if kb2_3 != '&nbsp;' %}
+                            {{ kb2_3.kcmc }}<br>
+                            <font title="老师">{{ kb2_3.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_3.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_3.jsmc }}</font><br>
+                            {% if kb2_3.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb2_3.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb2_3.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_3.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_3.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb2_3 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="3-3" class="kbcontent">
+                            {% if kb3_3 != '&nbsp;' %}
+                            {{ kb3_3.kcmc }}<br>
+                            <font title="老师">{{ kb3_3.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_3.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_3.jsmc }}</font><br>
+                            {% if kb3_3.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb3_3.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb3_3.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_3.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_3.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb3_3 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="4-3" class="kbcontent">
+                            {% if kb4_3 != '&nbsp;' %}
+                            {{ kb4_3.kcmc }}<br>
+                            <font title="老师">{{ kb4_3.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_3.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_3.jsmc }}</font><br>
+                            {% if kb4_3.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb4_3.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb4_3.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_3.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_3.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb4_3 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="5-3" class="kbcontent">
+                            {% if kb5_3 != '&nbsp;' %}
+                            {{ kb5_3.kcmc }}<br>
+                            <font title="老师">{{ kb5_3.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_3.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_3.jsmc }}</font><br>
+                            {% if kb5_3.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb5_3.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb5_3.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_3.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_3.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb5_3 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="6-3" class="kbcontent">
+                            {% if kb6_3 != '&nbsp;' %}
+                            {{ kb6_3.kcmc }}<br>
+                            <font title="老师">{{ kb6_3.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_3.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_3.jsmc }}</font><br>
+                            {% if kb6_3.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb6_3.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb6_3.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_3.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_3.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb6_3 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="7-3" class="kbcontent">
+                            {% if kb7_3 != '&nbsp;' %}
+                            {{ kb7_3.kcmc }}<br>
+                            <font title="老师">{{ kb7_3.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_3.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_3.jsmc }}</font><br>
+                            {% if kb7_3.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb7_3.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb7_3.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_3.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_3.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb7_3 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>第四大节&nbsp;</th>
+                    <td>
+                        <div id="1-4" class="kbcontent">
+                            {% if kb1_4 != '&nbsp;' %}
+                            {{ kb1_4.kcmc }}<br>
+                            <font title="老师">{{ kb1_4.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_4.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_4.jsmc }}</font><br>
+                            {% if kb1_4.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb1_4.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb1_4.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb1_4.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb1_4.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb1_4 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="2-4" class="kbcontent">
+                            {% if kb2_4 != '&nbsp;' %}
+                            {{ kb2_4.kcmc }}<br>
+                            <font title="老师">{{ kb2_4.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_4.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_4.jsmc }}</font><br>
+                            {% if kb2_4.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb2_4.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb2_4.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb2_4.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb2_4.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb2_4 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="3-4" class="kbcontent">
+                            {% if kb3_4 != '&nbsp;' %}
+                            {{ kb3_4.kcmc }}<br>
+                            <font title="老师">{{ kb3_4.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_4.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_4.jsmc }}</font><br>
+                            {% if kb3_4.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb3_4.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb3_4.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb3_4.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb3_4.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb3_4 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="4-4" class="kbcontent">
+                            {% if kb4_4 != '&nbsp;' %}
+                            {{ kb4_4.kcmc }}<br>
+                            <font title="老师">{{ kb4_4.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_4.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_4.jsmc }}</font><br>
+                            {% if kb4_4.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb4_4.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb4_4.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb4_4.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb4_4.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb4_4 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="5-4" class="kbcontent">
+                            {% if kb5_4 != '&nbsp;' %}
+                            {{ kb5_4.kcmc }}<br>
+                            <font title="老师">{{ kb5_4.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_4.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_4.jsmc }}</font><br>
+                            {% if kb5_4.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb5_4.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb5_4.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb5_4.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb5_4.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb5_4 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="6-4" class="kbcontent">
+                            {% if kb6_4 != '&nbsp;' %}
+                            {{ kb6_4.kcmc }}<br>
+                            <font title="老师">{{ kb6_4.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_4.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_4.jsmc }}</font><br>
+                            {% if kb6_4.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb6_4.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb6_4.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb6_4.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb6_4.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb6_4 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="7-4" class="kbcontent">
+                            {% if kb7_4 != '&nbsp;' %}
+                            {{ kb7_4.kcmc }}<br>
+                            <font title="老师">{{ kb7_4.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_4.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_4.jsmc }}</font><br>
+                            {% if kb7_4.multy != 0 %}
+                            ---------------------<br>
+                            {{ kb7_4.multy1.kcmc }}<br>
+                            <font title="老师">{{ kb7_4.multy1.jsxm }}</font><br>
+                            <font title="周次(节次)">{{ kb7_4.multy1.kkzc }}(周)</font><br>
+                            <font title="教室">{{ kb7_4.multy1.jsmc }}</font><br>
+                            {% endif %}
+                            {% else %}
+                            {{ kb7_4 | safe }}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>第五大节&nbsp;</th>
+                    <td>
+                        <div id="1-5" class="kbcontent">&nbsp;</div>
+                    </td>
+                    <td>
+                        <div id="2-5" class="kbcontent">&nbsp;</div>
+                    </td>
+                    <td>
+                        <div id="3-5" class="kbcontent">&nbsp;</div>
+                    </td>
+                    <td>
+                        <div id="4-5" class="kbcontent">&nbsp;</div>
+                    </td>
+                    <td>
+                        <div id="5-5" class="kbcontent">&nbsp;</div>
+                    </td>
+                    <td>
+                        <div id="6-5" class="kbcontent">&nbsp;</div>
+                    </td>
+                    <td>
+                        <div id="7-5" class="kbcontent">&nbsp;</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>备注:</th>
+                    <td colspan="7" align="left">综合实习 陈卫兵 17-18周;嵌入式系统 1-8周;DSP应用技术 1-8周;LTE技术与实践
+                        1-10周;现代光通信网络
+                        1-10周;嵌入式系统课程设计 叶玮琼 16周;DSP应用技术课程设计 龙永新 14周;LTE技术与实践课程设计 刘立 15周;通信网络的规划设计与维护 1-8周;
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="post-widgets">
+            <div id="needsharebutton-postbottom">
+                <span class="btn">
+                    <i class="fa fa-share-alt" aria-hidden="true"></i>
                 </span>
-                <span class="author" itemprop="copyrightHolder">𝐂𝐡𝐞𝐧</span>
-            </div>
-            <div class="busuanzi-count">
-                <script pjax="" async="" src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-                <span class="post-meta-item-icon"><i class="fa fa-user-secret"></i> </span><span class="site-uv"
-                    title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span> </span><span
-                    class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-eye"></i>
-                </span><span class="site-pv" title="总访问量"><span class="busuanzi-value"
-                        id="busuanzi_value_site_pv"></span></span>
             </div>
         </div>
-    </footer>
 
+        <div id="reward-container">
+            <div></div><button id="reward-button" disable="enable"
+                onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">打赏</button>
+            <div id="qr" style="display:none">
+                <div style="display:inline-block"><img src="/static/images/wechatpay.png" alt="𝐂𝐡𝐞𝐧 微信支付">
+                    <p>微信支付</p>
+                </div>
+                <div style="display:inline-block"><img src="/static/images/alipay.png" alt="𝐂𝐡𝐞𝐧 支付宝">
+                    <p>支付宝</p>
+                </div>
+            </div>
+        </div>
+        <div class="comment"></div>
+
+        <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+        <script src="//cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+        <script src="//cdnjs.loli.net/ajax/libs/lozad.js/1.9.0/lozad.min.js"></script>
+
+        <script>
+            var pjax = new Pjax({
+                selectors: [
+                    'head title',
+                    '#page-configurations',
+                    '.content-wrap',
+                    '.post-toc-wrap',
+                    '#pjax'
+                ],
+                switches: {
+                    '.post-toc-wrap': Pjax.switches.innerHTML
+                },
+                analytics: false,
+                cacheBust: false,
+            });
+
+            window.addEventListener('pjax:success', () => {
+                document.querySelectorAll('script[pjax], script#page-configurations, #pjax script').forEach(
+                    element => {
+                        var id = element.id || '';
+                        var src = element.src || '';
+                        var code = element.text || element.textContent || element.innerHTML || '';
+                        var parent = element.parentNode;
+                        parent.removeChild(element);
+                        var script = document.createElement('script');
+                        if (id !== '') {
+                            script.id = element.id;
+                        }
+                        if (src !== '') {
+                            script.src = src;
+                            // Force synchronous loading of peripheral JS.
+                            script.async = false;
+                        }
+                        if (code !== '') {
+                            script.appendChild(document.createTextNode(code));
+                        }
+                        parent.appendChild(script);
+                    });
+                NexT.boot.refresh();
+                // Define Motion Sequence & Bootstrap Motion.
+                if (CONFIG.motion.enable) {
+                    NexT.motion.integrator
+                        .init()
+                        .add(NexT.motion.middleWares.postList)
+                        .bootstrap();
+                }
+                NexT.utils.updateSidebarPosition();
+            });
+        </script>
+        <div id="pjax">
+            <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+            <script>
+                pbOptions = {
+                    iconStyle: "box",
+                    boxForm: "horizontal",
+                    position: "bottomCenter",
+                    networks: "Weibo,Wechat,Douban,QQZone,Twitter,Facebook"
+                }, new needShareButton("#needsharebutton-postbottom", pbOptions)
+            </script>
+
+            <script src="//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js"></script>
+            <script>
+                var GUEST = ['nick', 'mail', 'link'];
+                var guest = 'nick,mail,link';
+                guest = guest.split(',').filter(item => {
+                    return GUEST.includes(item);
+                });
+                new Valine({
+                    el: '#comments',
+                    verify: false,
+                    notify: false,
+                    appId: 'W0aszG0X0SsIHQvIWYSrC969-gzGzoHsz',
+                    appKey: 'ozjSCfjt66qIMInckgP8YzkB',
+                    placeholder: 'Just go go \n (建议填写邮箱，有回复后将会通过邮件通知)',
+                    avatar: 'retro',
+                    meta: guest,
+                    pageSize: '10' || 10,
+                    visitor: true,
+                    lang: '' || 'zh-cn',
+                    path: location.pathname
+                });
+            </script>
+        </div>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/gh/cxyzzz/CDN@19.7.19a/js/love.js"></script>
+        <script type="text/javascript">
+            var OriginTitile = document.title;
+            var titleTime;
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
+                    document.title = '╭(°A°`)╮ 页面崩溃啦 ~';
+                    clearTimeout(titleTime);
+                } else {
+                    $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
+                    document.title = '(ฅ>ω<*ฅ) 噫又好了~' + OriginTitile;
+                    titleTime = setTimeout(function () {
+                            document.title = OriginTitile;
+                        },
+                        2000);
+                }
+            });
+        </script>
+        </script>
+        
+        <footer id="footer" class="footer">
+            <div class="footer-inner">
+                <div class="copyright">© 
+                    <span itemprop="copyrightYear">2019</span> 
+                    <span class="with-love" id="animate">
+                        <i class="fa fa-heart"></i> 
+                    </span>
+                    <span class="author" itemprop="copyrightHolder">𝐂𝐡𝐞𝐧</span>
+                </div>
+                <div class="busuanzi-count">
+                    <script pjax="" async="" src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <span class="post-meta-item-icon"><i class="fa fa-user-secret"></i> </span><span class="site-uv"
+                        title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span> </span><span
+                        class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-eye"></i>
+                    </span><span class="site-pv" title="总访问量"><span class="busuanzi-value"
+                            id="busuanzi_value_site_pv"></span></span>
+                </div>
+            </div>
+        </footer>
+    </div>
 </body>
 
 </html>

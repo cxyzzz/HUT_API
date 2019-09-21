@@ -64,7 +64,7 @@ def index():
     else:
         return redirect(url_for('hut.login'))
 
-
+ 
 @hut.route('/gen_cal')
 def gen_cal():
     if (request.args.get('xh') and request.args.get('pwd')):
