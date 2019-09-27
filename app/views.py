@@ -32,10 +32,11 @@ def login():
 
     if request.method == 'POST':
         if form.validate_on_submit():
+            # print(request.form)
             account = request.form.get("account", type=str, default=None)
             password = request.form.get("password", type=str, default=None)
-            test = Student(account, password)
-            if test.HEADERS['token'] == '-1':
+            student = Student(account, password)
+            if student.HEADERS['token'] == '-1':
                 flash('用户名或密码错误...', category='error')
                 return render_template('login.html', form=form)
 
@@ -55,43 +56,41 @@ def index():
     if (session.get('account') and session.get('password')):
         account = session['account']
         password = session['password']
-        test = Student(account, password)
-        if test.HEADERS['token'] == '-1':
+        student = Student(account, password)
+        if student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
-        session['data'] = test.gen_Kb_web_data()
-        return render_template('index.html', **session['data'])
+        session['data'] = student.gen_Kb_json_data()
+        data = student.gen_Kb_web_data(session['data'])
+        return render_template('index.html', **data)
     else:
         return redirect(url_for('hut.login'))
 
- 
+
 @hut.route('/gen_cal')
 def gen_cal():
     if (request.args.get('xh') and request.args.get('pwd')):
         account = request.args.get('xh')
         password = request.args.get('pwd')
         filename = account + '.ics'
-        t = My_Calendar(filename, account, password)
-        if t.student.HEADERS['token'] == '-1':
+        cal = My_Calendar(account, password, filename)
+        if cal.student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
-        t.gen_cal()
-        directory = os.getcwd()
-        response = make_response(send_from_directory(
-            directory, filename, as_attachment=True))
-        return response
-
-    if (session['account']):
+    if (session.get('data')):
         account = session['account']
         password = session['password']
         filename = account + '.ics'
-        t = My_Calendar(filename, account, password)
-        t.gen_cal()
+        data = session['data']
+        cal = My_Calendar(account, password, filename, data)
+    try:
+        if not os.path.exists(filename):
+            cal.gen_cal()
         directory = os.getcwd()
         response = make_response(send_from_directory(
             directory, filename, as_attachment=True))
         return response
-    else:
+    except Exception:
         return redirect(url_for('hut.login'))
 
 

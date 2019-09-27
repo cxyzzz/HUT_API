@@ -17,9 +17,6 @@ import requests
 # import getpass
 from icalendar import Calendar, Event
 
-account = os.getenv('ACCOUNT')      # 账号
-password = os.getenv('PASSWORD')    # 密码
-url = 'http://218.75.197.123:83/app.do'     # 教务系统地址
 
 # def get_username_password(self):
 #     """
@@ -47,10 +44,11 @@ url = 'http://218.75.197.123:83/app.do'     # 教务系统地址
 
 
 class Student(object):
-    def __init__(self, account, password):
-        self.argv = sys.argv
-        self.account = account      # 账号，默认使用全局变量 account
-        self.password = password    # 密码，默认使用全局变量 password
+    def __init__(self, account=-1, password=-1):
+        self.account = os.getenv(
+            'ACCOUNT') if account == -1 else account      # 账号，默认使用全局变量 account
+        self.password = os.getenv(
+            'PASSWORD') if password == -1 else password   # 密码，默认使用全局变量 password
         self.session = self.login()
 
     HEADERS = {
@@ -65,6 +63,8 @@ class Student(object):
         'Referer': 'http://218.75.197.123:83',
         'accept-encoding': 'gzip, deflate, br'
     }
+
+    URL = 'http://218.75.197.123:83/app.do'     # 教务系统地址
 
     def login(self):
         """ 登录
@@ -94,14 +94,19 @@ class Student(object):
             "pwd": self.password
         }
         session = requests.Session()
-        req = session.get(url, params=params,
+        req = session.get(self.URL, params=params,
                           timeout=5, headers=self.HEADERS)
         res = json.loads(req.text)
-        self.HEADERS['token'] = res['token']
-        return session
+        if res['success']:
+            self.HEADERS['token'] = res['token']
+            return session
+        else:
+            self.HEADERS['token'] = -1
+            print(res['msg'])
+            exit(0)
 
     def get_data(self, params):
-        req = self.session.get(url, params=params,
+        req = self.session.get(self.URL, params=params,
                                timeout=5, headers=self.HEADERS)
         res = json.loads(req.text)
         return res
@@ -380,12 +385,13 @@ class Student(object):
                         data.append(j)
         return data
 
-    def gen_Kb_web_data(self):
+    def gen_Kb_web_data(self, kb=-1):
         """
             生成网页所需的总课表数据
         """
         data = {}
-        kb = self.gen_Kb_json_data()
+        kb = self.gen_Kb_json_data() if kb == -1 else kb
+
         for i in range(1, 8):
             for j in range(1, 8):
                 data['kb' + str(i)+'_'+str(j)] = '&nbsp;'
@@ -415,14 +421,15 @@ class Student(object):
 
 
 class My_Calendar(object):
-    def __init__(self, filename='kb.ics', account=account, password=password, data=-1):
-        self.account = account      # 账号，默认使用全局变量 account
-        self.password = password    # 密码，默认使用全局变量 password
+    def __init__(self, account=-1, password=-1, filename='kb.ics', data=-1):
+        self.account = os.getenv(
+            'ACCOUNT') if account == -1 else account      # 账号，默认使用全局变量 account
+        self.password = os.getenv(
+            'PASSWORD') if password == -1 else password   # 密码，默认使用全局变量 password
         self.student = Student(self.account, self.password)
-        self.data = self.student.gen_Kb_json_data() if (
-            data == -1) else data     # 所有课程的 json 数据
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
+        self.data = self.student.gen_Kb_json_data() if (data == -1) else data   # 所有课程的 json 数据
 
     def get_start_date(self):
         res = self.student.get_current_time()
@@ -497,7 +504,7 @@ class My_Calendar(object):
 
 
 class Electricity_Fee_Inquiry(object):
-    url = 'http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoom.do'
+    URL = 'http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoom.do'
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/PKQ1.180904.001; wv) '
                        'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
@@ -510,7 +517,7 @@ class Electricity_Fee_Inquiry(object):
         self.payProId = randint(1, 10000)
 
     def get_data(self, params):
-        req = requests.get(self.url, params=params,
+        req = requests.get(self.URL, params=params,
                            timeout=5, headers=self.HEADERS)
         res = json.loads(req.text)
         return res
@@ -536,17 +543,4 @@ class Electricity_Fee_Inquiry(object):
 
 
 if __name__ == '__main__':
-    # test = Student(account, password)
-    # a = test.gen_Kb_json_data()
-    # t = My_Calendar()
-    # t.gen_cal()
-    # with open('kb.json', 'w', encoding='utf8') as f:
-    #     json.dump(t.gen_Kb_json_data(), f, ensure_ascii=False)
-    t = Electricity_Fee_Inquiry()
-    ld_data = t.getJzinfo(4, 4, 1126,-1)
-    print(ld_data)
-    # ld = '25'
-    # for room in ld_data['roomlist']:
-    #     if ('学生公寓' + str(ld) + '栋') == room['name']:
-    #         buildid = room['id']
     pass

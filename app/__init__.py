@@ -3,12 +3,13 @@
 import os
 from flask import Flask
 from flask_bootstrap import Bootstrap
+from datetime import timedelta
 from app.views import hut
 
 config = {
     'DEBUG': True,
     'SECRET_KEY': os.urandom(24),
-    'PERMANENT_SESSION_LIFETIME': 900,
+    'PERMANENT_SESSION_LIFETIME': timedelta(days=1),
 }
 
 
