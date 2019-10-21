@@ -6,7 +6,7 @@ from flask import (Blueprint, flash, make_response, redirect, render_template,
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import InputRequired
-from app.HUT import Student, My_Calendar, Electricity_Fee_Inquiry
+from app.HUT import Student, MyCalendar, ElectricityFeeInquiry
 
 hut = Blueprint('hut', __name__, template_folder='templates')
 
@@ -73,7 +73,7 @@ def gen_cal():
         account = request.args.get('xh')
         password = request.args.get('pwd')
         filename = account + '.ics'
-        cal = My_Calendar(account, password, filename)
+        cal = MyCalendar(account, password, filename)
         if cal.student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
@@ -82,7 +82,7 @@ def gen_cal():
         password = session['password']
         filename = account + '.ics'
         data = session['data']
-        cal = My_Calendar(account, password, filename, data)
+        cal = MyCalendar(account, password, filename, data)
     try:
         if not os.path.exists(filename):
             cal.gen_cal()
@@ -102,7 +102,7 @@ def signout():
 
 @hut.route('/df', methods=['GET', 'POST'])
 def electricity_fee_inquiry():
-    elec = Electricity_Fee_Inquiry()
+    elec = ElectricityFeeInquiry()
     if request.method == 'GET':
         xh = request.args.get('xh')
         ld = request.args.get('ld')

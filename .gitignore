@@ -1,3 +1,6 @@
 __pycache__
 *.ics
 *.json
+.vscode
+*.db
+t.py
