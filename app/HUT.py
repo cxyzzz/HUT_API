@@ -6,17 +6,20 @@ API 列表来源： https://github.com/TLingC/QZAPI_Archive
 """
 
 import json
-import sys
+import os
+import sqlite3
+import threading
+# mport sys
+import time
 import uuid
 from datetime import datetime, timedelta
 from random import randint
+
 import pytz
-import os
 import requests
 # import getopt
 # import getpass
 from icalendar import Calendar, Event
-
 
 # def get_username_password(self):
 #     """
@@ -41,6 +44,62 @@ from icalendar import Calendar, Event
 #         self.username = input("请输入学号：")
 #     if "password" not in locals().keys():
 #         self.password = getpass.getpass("请输入密码（无回显）：")
+
+
+class SqliteDb(object):
+    def __init__(self, filename='HUT.db'):
+        self.conn = sqlite3.connect(filename)
+        print("Opened database successfully")
+        self.cur = self.conn.cursor()
+        try:
+            self.cur.execute('''CREATE TABLE STUDENT
+                    (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    RXNF        CHAR(5);
+                    NJ          CHAR(5),
+                    YXMC        CHAR(30),
+                    ZYMC        CHAR(15),
+                    BJ          CHAR(15),
+                    XH          CHAR(15)    NOT NULL,
+                    XM          TEXT    NOT NULL,
+                    XB          TEXT     NOT NULL,
+                    DH          CHAR(15),
+                    EMAIL       CHAR(30),
+                    KSH         CHAR(15));
+                    ''')
+            print("Table created successfully")
+            self.conn.commit()
+        except sqlite3.OperationalError as err:
+            print(err)
+            # sys.exit(0)
+
+    def insert(self, data):
+        # return
+        execute = ('''INSERT INTO STUDENT (NJ,YXMC,ZYMC,BJ,XH,XM,XB,DH,EMAIL,KSH)
+        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' % (
+            data['nj'], data['yxmc'], data['zymc'], data['bj'], data['xh'], data['xm'], data['xb'], data['dh'], data['email'], data['ksh']))
+        self.cur.execute(execute)
+        self.conn.commit()
+
+    def xh_search(self, xh):
+        execute = ("select xh from student where xh is %s" % (xh))
+        self.cur.execute(execute)
+        return self.cur.fetchall()
+
+
+class MyThread(threading.Thread):
+    def __init__(self, func, args=()):
+        super(MyThread, self).__init__()
+        self.func = func
+        self.args = args
+
+    def run(self):
+        self.result = self.func(*self.args)
+
+    def get_result(self):
+        try:
+            return self.result
+        except Exception:
+            return None
 
 
 class Student(object):
@@ -88,27 +147,30 @@ class Student(object):
                 }
         """
 
-        params = {
-            "method": "authUser",
-            "xh": self.account,
-            "pwd": self.password
+        datas = {
+            'method': 'authUser',
+            'xh': self.account,
+            'pwd': self.password
         }
         session = requests.Session()
-        req = session.get(self.URL, params=params,
-                          timeout=5, headers=self.HEADERS)
-        res = json.loads(req.text)
+        res = session.post(self.URL, data=datas,
+                           timeout=5, headers=self.HEADERS)
+        res = res.json()
         if res['success']:
             self.HEADERS['token'] = res['token']
             return session
         else:
-            self.HEADERS['token'] = -1
             print(res['msg'])
             exit(0)
 
     def get_data(self, params):
-        req = self.session.get(self.URL, params=params,
-                               timeout=5, headers=self.HEADERS)
-        res = json.loads(req.text)
+        try:
+            res = self.session.get(self.URL, params=params,
+                                   timeout=5, headers=self.HEADERS)
+            res = res.json()
+        except Exception as err:
+            time.sleep(1)
+            print(err)
         return res
 
     def get_current_time(self):
@@ -125,13 +187,13 @@ class Student(object):
         cur_time = datetime.strftime(
             datetime.now(), '%Y-%m-%d')
         params = {
-            "method": "getCurrentTime",
-            "currDate": cur_time
+            'method': 'getCurrentTime',
+            'currDate': cur_time
         }
         res = self.get_data(params)
         return res
 
-    def getKbcxAzc(self, zc=-1):
+    def getKbcxAzc(self, zc=''):
         """ 课表查询,默认查询当前周
             返回数据：
                 [
@@ -150,10 +212,10 @@ class Student(object):
         s = self.get_current_time()
         xnxqid = s['xnxqh']
         params = {
-            "method": "getKbcxAzc",
-            "xh": self.account,
-            "xnxqid": xnxqid,
-            "zc": s['zc'] if zc == -1 else zc
+            'method': 'getKbcxAzc',
+            'xh': self.account,
+            'xnxqid': xnxqid,
+            'zc': s['zc'] if not zc else zc
         }
         res = self.get_data(params)
         return res
@@ -173,7 +235,7 @@ class Student(object):
                 ]
         """
 
-        parames = {"method": "getXqcx"}
+        parames = {'method': 'getXqcx'}
         res = self.get_data(parames)
         return res
 
@@ -189,13 +251,13 @@ class Student(object):
         """
 
         parames = {
-            "method": "getJxlcx",
-            "xqid": xqids
+            'method': 'getJxlcx',
+            'xqid': xqids
         }
         res = self.get_data(parames)
         return res
 
-    def getKxJscx(self, js="0", idleTime="alday",  xqids="", jxlids="", classroomNumbers=""):
+    def getKxJscx(self, js='0', idleTime='alday',  xqids='', jxlids='', classroomNumbers=''):
         """ 空教室查询
             idleTime取值
                 allday：全天
@@ -241,47 +303,47 @@ class Student(object):
         action = input("请输入查询时间： 1.上午  2.下午  3.晚上（默认为全天，只需输入数字）")
         print("您选择的操作：%s" % action)
 
-        if action in ["1", "2", "3"]:
-            if action == "1":
-                idleTime = "am"
-            elif action == "2":
-                idleTime = "pm"
-            elif action == "3":
-                idleTime = "night"
+        if action in ['1', '2', '3']:
+            if action == '1':
+                idleTime = 'am'
+            elif action == '2':
+                idleTime = 'pm'
+            elif action == '3':
+                idleTime = 'night'
 
         params = {
-            "method": "getKxJscx",
-            "time": time,
-            "idleTime": idleTime
+            'method': 'getKxJscx',
+            'time': time,
+            'idleTime': idleTime
         }
 
         js = input("是否启用精准查询? (默认不启用，0：No 1：Yes)")
 
-        if js == "1":
+        if js == '1':
             while True:
                 xqids = input("请输入校区 ID:(1.河东校区  2.河西校区）")
-                if xqids not in ["1", "2"]:
+                if xqids not in ['1', '2']:
                     print("输入错误！请重新输入")
                 else:
                     break
             while True:
                 print(self.getJxlcx(xqids))
                 jxlids = input("请输入教学楼 ID:")
-                if jxlids not in ["01", "03", "04", "05", "06", "07", "08",
-                                  "09", "10", "11", "12", "14", "16", "17",
-                                  "18", "19", "20", "21", "22", "23", "24",
-                                  "25", "26"]:
+                if jxlids not in ['01', '03', '04', '05', '06', '07', '08',
+                                  '09', '10', '11', '12', '14', '16', '17',
+                                  '18', '19', '20', '21', '22', '23', '24',
+                                  '25', '26']:
                     print("输入错误！请重新输入")
                 else:
                     break
-            params["xqid"] = xqids,
-            params["jxlid"] = jxlids,
-            params["classroomNumber"] = classroomNumbers
+            params['xqid'] = xqids,
+            params['jxlid'] = jxlids,
+            params['classroomNumber'] = classroomNumbers
 
         res = self.get_data(params)
         return res
 
-    def getUserInfo(self):
+    def getUserInfo(self, xh=''):
         ''' 获取帐号信息
             返回值：
                 {
@@ -306,7 +368,7 @@ class Student(object):
 
         params = {
             'method': 'getUserInfo',
-            'xh': self.account
+            'xh': self.account if not xh else xh
         }
         res = self.get_data(params)
         return res
@@ -354,9 +416,9 @@ class Student(object):
         """
 
         params = {
-            "method": "getCjcx",
-            "xh": self.account,
-            "xnxqid": id
+            'method': 'getCjcx',
+            'xh': self.account,
+            'xnxqid': id
         }
         res = self.get_data(params)
         return res
@@ -365,8 +427,8 @@ class Student(object):
         """获取考试信息"""
 
         params = {
-            "method": "getKscx",
-            "xh": self.account
+            'method': 'getKscx',
+            'xh': self.account
         }
         res = self.get_data(params)
         return res
@@ -377,20 +439,23 @@ class Student(object):
         """
         data = []
         for i in range(1, 31):
-            res = self.getKbcxAzc(i)
+            t = MyThread(self.getKbcxAzc, (i,))
+            t. start()
+            t.join()
+            res = t.get_result()
             if res:
-                # print('正在获取第 %d 周课表' % i)
+                print('正在获取第 %d 周课表' % i)
                 for j in res:
                     if j not in data:
                         data.append(j)
         return data
 
-    def gen_Kb_web_data(self, kb=-1):
+    def gen_Kb_web_data(self, kb=()):
         """
             生成网页所需的总课表数据
         """
         data = {}
-        kb = self.gen_Kb_json_data() if kb == -1 else kb
+        kb = self.gen_Kb_json_data() if not kb else kb
 
         for i in range(1, 8):
             for j in range(1, 8):
@@ -419,9 +484,125 @@ class Student(object):
         data['user'] = self.getUserInfo()
         return data
 
+    def gen_user_db(self, db):
+        self.db = db
+        data = {
+            'method': 'getUserInfo'
+        }
+        njs = ('19', '18', '17', '16')
+        bj = 0
+        id = 0
+        xy_list = json.load(open('学院.json', 'r'))
+        xy_zys = []
+        for xy in xy_list:
+            for id in xy['ids']:
+                for zy in id['zy']:
+                    xy_zys.append((id['id'], zy['id']))
+        for nj in njs:
+            print(nj)
+            for xy_zy in xy_zys:
+                print(xy_zy)
+                # time.sleep(5)
+                if(nj == '17' and xy_zy[0] == '408' and xy_zy[1] == '00'):
+                    bj = 10
+                while(True):
+                    data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
+                        str(bj).zfill(2) + str(id).zfill(2)
+                    if(not self.db.xh_search(data['xh'])):
+                        t = MyThread(self.get_data, (data,))
+                        t.start()
+                        t.join()
+                        res = t.get_result()
+                    else:
+                        res = 'break'
+                    if(res):
+                        # 有数据表明当前班级号正确
+                        if(res != 'break'):
+                            print('Insert=====>', res)
+                            self.db.insert(res)
+                        # print(res)
+                        # 获取此班级所有学生
+                        while(True):
+                            id += 1
+                            if(xy_zy[1] == '00' or xy_zy[1] == '11' or xy_zy[1] == '15' or xy_zy[1] == '70' or xy_zy[0] == '110'):
+                                if(id % 30 == 0):
+                                    print('long id sleep %.2f' %
+                                          (id/100))
+                                    time.sleep(id/100)
+                            data['xh'] = str(
+                                nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
+                            if(not self.db.xh_search(data['xh'])):
+                                t = MyThread(self.get_data, (data,))
+                                t.start()
+                                t.join()
+                                res = t.get_result()
+                            else:
+                                res = 'break'
+                            if(res):
+                                # 有数据表明当前班级号正确
+                                if(res != 'break'):
+                                    print('Insert=====>', res)
+                                    self.db.insert(res)
+                                    # print(res)
+                            else:
+                                break
+                    else:
+                        # 防止当某个班级没有 00 这个编号时出现直接跳过此班级的情况
+                        while(True):
+                            id += 1
+                            if(xy_zy[1] == '00' or xy_zy[1] == '11' or xy_zy[1] == '15' or xy_zy[1] == '70' or xy_zy[0] == '110'):
+                                if(id % 30 == 0):
+                                    print('long id sleep %.2f' %
+                                          (id/100))
+                                    time.sleep(id/100)
+                            data['xh'] = str(
+                                nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
+                            if(not self.db.xh_search(data['xh'])):
+                                t = MyThread(self.get_data, (data,))
+                                t.start()
+                                t.join()
+                                res = t.get_result()
+                            else:
+                                res = 'break'
+                            if(res):
+                                # 有数据表明当前班级号正确
+                                if(res != 'break'):
+                                    print('Insert=====>', res)
+                                    self.db.insert(res)
+                                    # print(res)
+                            else:
+                                break
+                        # 跑完一个班级，班级号加一，班级编号重置为0
+                        bj += 1
+                        # 处理4080012 之后直接调到 4080020
+                        if(nj == '17' and xy_zy[0] == '408' and xy_zy[1] == '00'):
+                            if(bj == 13):
+                                bj = 20
+                        id = 0
+                        data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
+                            str(bj).zfill(2) + str(id).zfill(2)
+                        t = MyThread(self.get_data, (data,))
+                        t.start()
+                        t.join()
+                        res = t.get_result()
+                        # 防止当班级加一后无00编号导致直接跳过此专业
+                        if(not res):
+                            id += 1
+                            data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
+                                str(bj).zfill(2) + str(id).zfill(2)
+                        if(not res and not self.get_data(data)):
+                            # 无数据表明已跑完此专业所有班级，将班级号和班级编号置0(17级计算机班级从10开始)，跳出循环进行下一个专业查询
+                            if(nj == '17' and xy_zy[0] == '408' and xy_zy[1] == '00'):
+                                bj = 10
+                            else:
+                                bj = 0
+                            id = 0
+                            break
+        self.db.conn.close()
 
-class My_Calendar(object):
-    def __init__(self, account=-1, password=-1, filename='kb.ics', data=-1):
+
+class MyCalendar(object):
+    def __init__(self, account=-1, password=-1, filename='kb.ics', data=()):
         self.account = os.getenv(
             'ACCOUNT') if account == -1 else account      # 账号，默认使用全局变量 account
         self.password = os.getenv(
@@ -429,7 +610,8 @@ class My_Calendar(object):
         self.student = Student(self.account, self.password)
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
-        self.data = self.student.gen_Kb_json_data() if (data == -1) else data   # 所有课程的 json 数据
+        self.data = self.student.gen_Kb_json_data() if (
+            not data) else data   # 所有课程的 json 数据
 
     def get_start_date(self):
         res = self.student.get_current_time()
@@ -503,7 +685,7 @@ class My_Calendar(object):
             f.write(str(cal.to_ical(), encoding='utf8'))
 
 
-class Electricity_Fee_Inquiry(object):
+class ElectricityFeeInquiry(object):
     URL = 'http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoom.do'
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/PKQ1.180904.001; wv) '
@@ -543,4 +725,7 @@ class Electricity_Fee_Inquiry(object):
 
 
 if __name__ == '__main__':
+    # print(time.ctime(time.time()))
+    t = Student('16408200218', '')
+    # print(time.ctime(time.time()))
     pass
