@@ -6,7 +6,7 @@ from flask import (Blueprint, flash, make_response, redirect, render_template,
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import InputRequired
-from app.HUT import Student, MyCalendar, ElectricityFeeInquiry
+from app.HUT import Student, CurriculumCalendar, ElectricityFeeInquiry, JobCalendar
 
 hut = Blueprint('hut', __name__, template_folder='templates')
 
@@ -68,12 +68,12 @@ def index():
 
 
 @hut.route('/gen_cal')
-def gen_cal():
+def gen_cur_cal():
     if (request.args.get('xh') and request.args.get('pwd')):
         account = request.args.get('xh')
         password = request.args.get('pwd')
         filename = account + '.ics'
-        cal = MyCalendar(account, password, filename)
+        cal = CurriculumCalendar(account, password, filename)
         if cal.student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
@@ -82,7 +82,7 @@ def gen_cal():
         password = session['password']
         filename = account + '.ics'
         data = session['data']
-        cal = MyCalendar(account, password, filename, data)
+        cal = CurriculumCalendar(account, password, filename, data)
     try:
         if not os.path.exists(filename):
             cal.gen_cal()
@@ -160,3 +160,52 @@ def electricity_fee_inquiry():
                        timeout=5, headers=elec.HEADERS)
     res = json.loads(req.text)
     return (xh + '校区 ' + ld + '栋 ' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
+
+
+@hut.route('/job.ics', methods=['GET', 'POST'])
+def gen_job_cal():
+    if request.method == 'GET':
+        suffix = request.args.get('sf')
+        if(suffix == '宣讲会'):
+            suffix = 'getcareers'
+        elif(suffix == '双选会'):
+            suffix = 'getjobfairs'
+        elif(suffix):
+            return("sf 值错误，可选值：'宣讲会'，'双选会'")
+        else:
+            suffix = 'getcareers'
+        typ = request.args.get('tp')
+        if(typ == '校内'):
+            typ = 'inner'
+        elif(typ == '校外'):
+            typ = 'outer'
+        elif(typ):
+            return("tp 值错误，可选值：'校内'，'校外'")
+        else:
+            typ = 'inner'
+    else:
+        suffix = request.form.get('sf')
+        if(suffix == '宣讲会'):
+            suffix = 'getcareers'
+        elif(suffix == '双选会'):
+            suffix = 'getjobfairs'
+        elif(suffix):
+            return("sf 值错误，可选值：'宣讲会'，'双选会'")
+        else:
+            suffix = 'getcareers'
+
+        typ = request.form.get('tp')
+        if(typ == '校内'):
+            typ = 'inner'
+        elif(typ == '校外'):
+            typ = 'outer'
+        elif(typ):
+            return("tp 值错误，可选值：'校内'，'校外'")
+        else:
+            typ = 'inner'
+
+    job = JobCalendar(suffix=suffix)
+    data = job.gen_cal(type=typ)
+    response = make_response(data)
+    response.headers['Content-Type'] = 'text/plain'
+    return response

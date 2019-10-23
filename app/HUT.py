@@ -87,13 +87,14 @@ class SqliteDb(object):
 
 
 class MyThread(threading.Thread):
-    def __init__(self, func, args=()):
+    def __init__(self, func, *args, **kwargs):
         super(MyThread, self).__init__()
         self.func = func
         self.args = args
+        self.kwargs = kwargs
 
     def run(self):
-        self.result = self.func(*self.args)
+        self.result = self.func(*self.args, **self.kwargs)
 
     def get_result(self):
         try:
@@ -105,9 +106,9 @@ class MyThread(threading.Thread):
 class Student(object):
     def __init__(self, account=-1, password=-1):
         self.account = os.getenv(
-            'ACCOUNT') if account == -1 else account      # 账号，默认使用全局变量 account
+            'xh') if account == -1 else account      # 账号，默认使用全局变量 account
         self.password = os.getenv(
-            'PASSWORD') if password == -1 else password   # 密码，默认使用全局变量 password
+            'pwd') if password == -1 else password   # 密码，默认使用全局变量 password
         self.session = self.login()
 
     HEADERS = {
@@ -601,7 +602,7 @@ class Student(object):
         self.db.conn.close()
 
 
-class MyCalendar(object):
+class CurriculumCalendar(object):
     def __init__(self, account=-1, password=-1, filename='kb.ics', data=()):
         self.account = os.getenv(
             'ACCOUNT') if account == -1 else account      # 账号，默认使用全局变量 account
@@ -635,35 +636,35 @@ class MyCalendar(object):
         for j in self.data:
             event = Event()
             try:
-                s_week_s, e_week_s = j['kkzc'].split('-')
+                sta_week, end_week = j['kkzc'].split('-')
             except ValueError:
-                s_week_s = j['kkzc']
-                e_week_s = j['kkzc']
+                sta_week = j['kkzc']
+                end_week = j['kkzc']
             self.start_date_datetime = datetime.strptime(self.start_date, "%Y-%m-%d") + \
-                timedelta(days=(int(s_week_s)-1)*7+(int(j['kcsj'][:1]) - 1))
+                timedelta(days=(int(sta_week)-1)*7+(int(j['kcsj'][:1]) - 1))
             end_date_datetime = self.start_date_datetime + \
-                timedelta(days=(int(e_week_s)-1)*7+(int(j['kcsj'][:1]) - 1))
-            s_year_s, s_mon_s, s_day_s = datetime.strftime(
+                timedelta(days=(int(end_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+            sta_year, sta_mon, sta_day = datetime.strftime(
                 self.start_date_datetime, '%Y-%m-%d').split('-')
-            e_year_s, e_mon_s, e_day_s = datetime.strftime(
+            end_year, end_mon, end_day = datetime.strftime(
                 end_date_datetime, '%Y-%m-%d').split('-')
 
-            s_hour_s, s_minu_s = j['kssj'].split(':')
-            e_hour_s, e_minu_s = j['jssj'].split(':')
+            sta_hour, sta_minu = j['kssj'].split(':')
+            end_hour, end_minu = j['jssj'].split(':')
 
             # print("*"*50)
-            # print(datetime(int(s_year_s), int(s_mon_s), int(
-            #     s_day_s), int(s_hour_s), int(s_minu_s), 0))
-            # print(datetime(int(s_year_s), int(s_mon_s), int(
-            #     s_day_s), int(e_hour_s), int(e_minu_s), 0))
+            # print(datetime(int(sta_year), int(sta_mon), int(
+            #     sta_day), int(sta_hour), int(sta_minu), 0))
+            # print(datetime(int(sta_year), int(sta_mon), int(
+            #     sta_day), int(end_hour), int(end_minu), 0))
             # print("*"*50)
             # print(j)
             # print('>'*50)
 
             event.add('DTSTAMP', datetime.now())
-            event.add('DTSTART', datetime(int(s_year_s), int(s_mon_s), int(s_day_s), int(s_hour_s), int(s_minu_s), 0,
+            event.add('DTSTART', datetime(int(sta_year), int(sta_mon), int(sta_day), int(sta_hour), int(sta_minu), 0,
                                           tzinfo=tz))
-            event.add('DTEND', datetime(int(s_year_s), int(s_mon_s), int(s_day_s), int(e_hour_s), int(e_minu_s), 0,
+            event.add('DTEND', datetime(int(sta_year), int(sta_mon), int(sta_day), int(end_hour), int(end_minu), 0,
                                         tzinfo=tz))
             event.add('SUMMARY', j['kcmc'])
             event.add('UID', str(uuid.uuid1()))
@@ -673,7 +674,7 @@ class MyCalendar(object):
                       (j['kcsj'][2:3], j['kcsj'][-1:], j['jsmc'], j['jsxm']))
             parameters = {
                 'FREQ': 'WEEKLY',
-                'UNTIL': datetime(int(e_year_s), int(e_mon_s), int(e_day_s), int(e_hour_s), int(e_minu_s), 0,
+                'UNTIL': datetime(int(end_year), int(end_mon), int(end_day), int(end_hour), int(end_minu), 0,
                                   tzinfo=tz),
                 'INTERVAL': '1'
             }
@@ -724,7 +725,112 @@ class ElectricityFeeInquiry(object):
         return res
 
 
+class JobCalendar(object):
+    HOST = 'http://job.hut.edu.cn/module/'
+    INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
+    INFO_API_HOST = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token=yxqqnn0000000012&career_id='
+    HEADERS = {
+        'User-Agent': ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
+                       'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
+                       'Chrome/67.0.3396.87 XWEB/882 MMWEBSDK/190503 '
+                       'Mobile Safari/537.36 MMWEBID/443 '
+                       'MicroMessenger/7.0.5.1440(0x27000536) '
+                       'Process/tools NetType/4G Language/zh_CN '
+                       'MicroMessenger/7.0.5.1440(0x27000536) '),
+    }
+
+    def __init__(self, suffix='getcareers', m=14):
+        self.suffix = suffix
+        self.url = self.HOST + suffix
+        self.dates = []
+        for i in range(m):
+            self.dates.append(datetime.strftime(datetime.now() + timedelta(days=i), '%Y-%m-%d'))
+        self.cal = Calendar()
+        self.session = requests.Session()
+
+    def get_datas(self, **kwargs):
+        params = {
+            'start': kwargs['start'] if('start' in kwargs.keys()) else 0,
+            'count': kwargs['count'] if('count' in kwargs.keys()) else 100,
+            'keyword': kwargs['keyword'] if('keyword' in kwargs.keys()) else '',
+            'address': kwargs['address'] if('address' in kwargs.keys()) else '',
+            'type': kwargs['type'] if('type' in kwargs.keys()) else 'inner'
+        }
+        if(self.suffix == 'getcareers'):
+            params['professionals'] = kwargs['professionals'] if('professionals' in kwargs.keys()) else ''
+            params['career_type'] = kwargs['career_type'] if('career_type' in kwargs.keys()) else ''
+            self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/careers'
+        else:
+            params['organisers'] = kwargs['organisers'] if('organisers' in kwargs.keys()) else ''
+            self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/jobfairs'
+
+        datas = []
+        for date in self.dates:
+            params['day'] = date
+            while(True):
+                try:
+                    t = MyThread(self.session.get, self.url, params=params,
+                                 timeout=5, headers=self.HEADERS)
+                    t.start()
+                    t.join()
+                    res = t.get_result()
+                    print(res.url)
+                    res = res.json()
+                    # print('>' * 50)
+                    # print(res)
+                    if(res['data']):
+                        datas.append(res['data'][0])
+                        # time.sleep(0.5)
+                    break
+                except Exception as err:
+                    print(err)
+                    time.sleep(1)
+            if(not res['data']):
+                break
+        return datas
+
+    def gen_cal(self, **kwargs):
+        tz = pytz.timezone('Asia/Shanghai')
+
+        cal = Calendar()
+        cal.add('PRODID', '-//Hoshizora //iCalendar 4.0.3')
+        cal.add('VERSION', '2.0')
+        cal.add('CALSCALE', 'GREGORIAN')
+        # print(self.data)
+        for data in self.get_datas(**kwargs):
+            year, mon, day = data['meet_day'].split('-')
+            sta_hour, sta_minu = data['meet_time'].split(':')
+            event = Event()
+            event.add('DTSTAMP', datetime.now())
+            event.add('DTSTART', datetime(int(year), int(mon), int(day), int(sta_hour), int(sta_minu), 0,
+                                          tzinfo=tz))
+            # event.add('DTEND', datetime(int(year), int(mon), int(day), int(sta_hour)+2, int(sta_minu), 0,
+            #                             tzinfo=tz))
+            event.add('SUMMARY', data['meet_name'])
+            event.add('UID', str(uuid.uuid1()))
+            event.add('LOCATION', data['address'])
+            event.add('DESCRIPTION', '%s %s %s\n城市：%s 点击统计：%s\n企业类型：%s 行业: %s\n需求专业：%s\n%s' %
+                      (data['meet_day'], data['meet_time'], data['address'],
+                       data['city_name'], data['view_count'],
+                       data['company_property'], data['industry_category'],
+                       data['professionals'],
+                       self.INFO_HOST + data['career_talk_id']))
+            # parameters = {
+            #     'FREQ': 'WEEKLY',
+            #     'UNTIL': datetime(int(year), int(mon), int(day), int(sta_hour) + 2, int(sta_minu), 0,
+            #                       tzinfo=tz),
+            #     'INTERVAL': '1'
+            # }
+            # event.add('RRULE', parameters)
+            cal.add_component(event)
+        # s = str(cal.to_ical(), encoding='utf8')
+        # print(s)
+        return(str(cal.to_ical(), encoding='utf8'))
+        # with open('jb.ics', 'w', encoding='utf8') as f:
+        #     f.write(str(cal.to_ical(), encoding='utf8'))
+
+
 if __name__ == '__main__':
-    # print(time.ctime(time.time()))
-    # print(time.ctime(time.time()))
+    t = JobCalendar()
+    t.get_datas()
     pass
