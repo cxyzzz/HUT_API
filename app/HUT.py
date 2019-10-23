@@ -762,6 +762,7 @@ class JobCalendar(object):
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/careers'
         else:
             params['organisers'] = kwargs['organisers'] if('organisers' in kwargs.keys()) else ''
+            param['type'] = None if(param['type'] == 'inner')
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/jobfairs'
 
         datas = []
@@ -774,7 +775,7 @@ class JobCalendar(object):
                     t.start()
                     t.join()
                     res = t.get_result()
-                    print(res.url)
+                    # print(res.url)
                     res = res.json()
                     # print('>' * 50)
                     # print(res)
@@ -809,7 +810,7 @@ class JobCalendar(object):
             event.add('SUMMARY', data['meet_name'])
             event.add('UID', str(uuid.uuid1()))
             event.add('LOCATION', data['address'])
-            event.add('DESCRIPTION', '%s %s %s\n城市：%s 点击统计：%s\n企业类型：%s 行业: %s\n需求专业：%s\n%s' %
+            event.add('DESCRIPTION', '%s %s %s\n城市：%s 点击统计：%s\n企业属性：%s 行业类别: %s\n需求专业：%s\n%s' %
                       (data['meet_day'], data['meet_time'], data['address'],
                        data['city_name'], data['view_count'],
                        data['company_property'], data['industry_category'],
