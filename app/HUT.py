@@ -456,14 +456,20 @@ class Student(object):
             生成网页所需的总课表数据
         """
         data = {}
-        kb = self.gen_Kb_json_data() if not kb else kb
+        kb = kb if kb else self.gen_Kb_json_data()
 
         for i in range(1, 8):
             for j in range(1, 8):
                 data['kb' + str(i)+'_'+str(j)] = '&nbsp;'
         for i in kb:
-            dic_key = 'kb' + i['kcsj'][0:1]+'_' + \
-                str(int((int(i['kcsj'][2:3])+int(i['kcsj'][-1:])+1)/4))
+            if(len(i['kcsj'][4:]) == 1):
+                dic_key = 'kb' + i['kcsj'][0:1]+'_' + \
+                    str(int((int(i['kcsj'][2:3])+int(i['kcsj'][-1:])+1)/4))
+            else:
+                dic_key = 'kb' + i['kcsj'][0:1]+'_' + \
+                    str(int((int(i['kcsj'][2:3])+int(i['kcsj'][4:5])+1)/4))
+                key2 = 'kb' + i['kcsj'][0:1]+'_' + \
+                    str(int((int(i['kcsj'][6:7])+int(i['kcsj'][-1:])+1)/4))
             if data[dic_key] != '&nbsp;':
                 m = data[dic_key]['multy']
                 m += 1
@@ -474,6 +480,9 @@ class Student(object):
                     'kkzc': i['kkzc'],
                     'jsmc': i['jsmc']
                 }
+                if('key2' in locals()):
+                    data[key2] = data[dic_key]
+                    del key2
             else:
                 data[dic_key] = {
                     'multy': 0,
@@ -482,6 +491,9 @@ class Student(object):
                     'kkzc': i['kkzc'],
                     'jsmc': i['jsmc']
                 }
+                if('key2' in locals()):
+                    data[key2] = data[dic_key]
+                    del key2
         data['user'] = self.getUserInfo()
         return data
 
@@ -605,9 +617,9 @@ class Student(object):
 class CurriculumCalendar(object):
     def __init__(self, account=-1, password=-1, filename='kb.ics', data=()):
         self.account = os.getenv(
-            'ACCOUNT') if account == -1 else account      # 账号，默认使用全局变量 account
+            'xh') if account == -1 else account      # 账号，默认使用全局变量 account
         self.password = os.getenv(
-            'PASSWORD') if password == -1 else password   # 密码，默认使用全局变量 password
+            'pwd') if password == -1 else password   # 密码，默认使用全局变量 password
         self.student = Student(self.account, self.password)
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
@@ -636,50 +648,91 @@ class CurriculumCalendar(object):
         for j in self.data:
             event = Event()
             try:
-                sta_week, end_week = j['kkzc'].split('-')
+                for k in j['kkzc'].split(','):
+                    sta_week, end_week = k.split('-')
+                    self.start_date_datetime = datetime.strptime(self.start_date, "%Y-%m-%d") + \
+                        timedelta(days=(int(sta_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                    end_date_datetime = self.start_date_datetime + \
+                        timedelta(days=(int(end_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                    sta_year, sta_mon, sta_day = datetime.strftime(
+                        self.start_date_datetime, '%Y-%m-%d').split('-')
+                    end_year, end_mon, end_day = datetime.strftime(
+                        end_date_datetime, '%Y-%m-%d').split('-')
+
+                    sta_hour, sta_minu = j['kssj'].split(':')
+                    end_hour, end_minu = j['jssj'].split(':')
+
+                    # print("*"*50)
+                    # print(datetime(int(sta_year), int(sta_mon), int(
+                    #     sta_day), int(sta_hour), int(sta_minu), 0))
+                    # print(datetime(int(sta_year), int(sta_mon), int(
+                    #     sta_day), int(end_hour), int(end_minu), 0))
+                    # print("*"*50)
+                    # print(j)
+                    # print('>'*50)
+
+                    event.add('DTSTAMP', datetime.now())
+                    event.add('DTSTART', datetime(int(sta_year), int(sta_mon), int(sta_day), int(sta_hour), int(sta_minu), 0,
+                                                  tzinfo=tz))
+                    event.add('DTEND', datetime(int(sta_year), int(sta_mon), int(sta_day), int(end_hour), int(end_minu), 0,
+                                                tzinfo=tz))
+                    event.add('SUMMARY', j['kcmc'])
+                    event.add('UID', str(uuid.uuid1()))
+                    event.add('LOCATION', '%s %s' %
+                              (j['jsmc'], j['jsxm']))
+                    event.add('DESCRIPTION', '第%s节 - 第%s节\n%s\n%s' %
+                              (j['kcsj'][2:3], j['kcsj'][-1:], j['jsmc'], j['jsxm']))
+                    parameters = {
+                        'FREQ': 'WEEKLY',
+                        'UNTIL': datetime(int(end_year), int(end_mon), int(end_day), int(end_hour), int(end_minu), 0,
+                                          tzinfo=tz),
+                        'INTERVAL': '1'
+                    }
+                    event.add('RRULE', parameters)
+                    cal.add_component(event)
             except ValueError:
                 sta_week = j['kkzc']
                 end_week = j['kkzc']
-            self.start_date_datetime = datetime.strptime(self.start_date, "%Y-%m-%d") + \
-                timedelta(days=(int(sta_week)-1)*7+(int(j['kcsj'][:1]) - 1))
-            end_date_datetime = self.start_date_datetime + \
-                timedelta(days=(int(end_week)-1)*7+(int(j['kcsj'][:1]) - 1))
-            sta_year, sta_mon, sta_day = datetime.strftime(
-                self.start_date_datetime, '%Y-%m-%d').split('-')
-            end_year, end_mon, end_day = datetime.strftime(
-                end_date_datetime, '%Y-%m-%d').split('-')
+                self.start_date_datetime = datetime.strptime(self.start_date, "%Y-%m-%d") + \
+                    timedelta(days=(int(sta_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                end_date_datetime = self.start_date_datetime + \
+                    timedelta(days=(int(end_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                sta_year, sta_mon, sta_day = datetime.strftime(
+                    self.start_date_datetime, '%Y-%m-%d').split('-')
+                end_year, end_mon, end_day = datetime.strftime(
+                    end_date_datetime, '%Y-%m-%d').split('-')
 
-            sta_hour, sta_minu = j['kssj'].split(':')
-            end_hour, end_minu = j['jssj'].split(':')
+                sta_hour, sta_minu = j['kssj'].split(':')
+                end_hour, end_minu = j['jssj'].split(':')
 
-            # print("*"*50)
-            # print(datetime(int(sta_year), int(sta_mon), int(
-            #     sta_day), int(sta_hour), int(sta_minu), 0))
-            # print(datetime(int(sta_year), int(sta_mon), int(
-            #     sta_day), int(end_hour), int(end_minu), 0))
-            # print("*"*50)
-            # print(j)
-            # print('>'*50)
+                # print("*"*50)
+                # print(datetime(int(sta_year), int(sta_mon), int(
+                #     sta_day), int(sta_hour), int(sta_minu), 0))
+                # print(datetime(int(sta_year), int(sta_mon), int(
+                #     sta_day), int(end_hour), int(end_minu), 0))
+                # print("*"*50)
+                # print(j)
+                # print('>'*50)
 
-            event.add('DTSTAMP', datetime.now())
-            event.add('DTSTART', datetime(int(sta_year), int(sta_mon), int(sta_day), int(sta_hour), int(sta_minu), 0,
-                                          tzinfo=tz))
-            event.add('DTEND', datetime(int(sta_year), int(sta_mon), int(sta_day), int(end_hour), int(end_minu), 0,
-                                        tzinfo=tz))
-            event.add('SUMMARY', j['kcmc'])
-            event.add('UID', str(uuid.uuid1()))
-            event.add('LOCATION', '%s %s' %
-                      (j['jsmc'], j['jsxm']))
-            event.add('DESCRIPTION', '第%s节 - 第%s节\n%s\n%s' %
-                      (j['kcsj'][2:3], j['kcsj'][-1:], j['jsmc'], j['jsxm']))
-            parameters = {
-                'FREQ': 'WEEKLY',
-                'UNTIL': datetime(int(end_year), int(end_mon), int(end_day), int(end_hour), int(end_minu), 0,
-                                  tzinfo=tz),
-                'INTERVAL': '1'
-            }
-            event.add('RRULE', parameters)
-            cal.add_component(event)
+                event.add('DTSTAMP', datetime.now())
+                event.add('DTSTART', datetime(int(sta_year), int(sta_mon), int(sta_day), int(sta_hour), int(sta_minu), 0,
+                                            tzinfo=tz))
+                event.add('DTEND', datetime(int(sta_year), int(sta_mon), int(sta_day), int(end_hour), int(end_minu), 0,
+                                            tzinfo=tz))
+                event.add('SUMMARY', j['kcmc'])
+                event.add('UID', str(uuid.uuid1()))
+                event.add('LOCATION', '%s %s' %
+                        (j['jsmc'], j['jsxm']))
+                event.add('DESCRIPTION', '第%s节 - 第%s节\n%s\n%s' %
+                        (j['kcsj'][2:3], j['kcsj'][-1:], j['jsmc'], j['jsxm']))
+                parameters = {
+                    'FREQ': 'WEEKLY',
+                    'UNTIL': datetime(int(end_year), int(end_mon), int(end_day), int(end_hour), int(end_minu), 0,
+                                    tzinfo=tz),
+                    'INTERVAL': '1'
+                }
+                event.add('RRULE', parameters)
+                cal.add_component(event)
         # print(str(cal.to_ical(), encoding='utf8'))
 
         with open(self.filename, 'w', encoding='utf8') as f:
@@ -832,6 +885,10 @@ class JobCalendar(object):
 
 
 if __name__ == '__main__':
-    t = JobCalendar()
-    t.get_datas()
+    # t = Student()
+    # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
+    t = CurriculumCalendar()
+    t.gen_cal()
+    # t = JobCalendar()
+    # t.get_datas()
     pass

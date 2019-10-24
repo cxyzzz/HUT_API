@@ -77,21 +77,11 @@ def gen_cur_cal():
         if cal.student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
-    if (session.get('data')):
-        account = session['account']
-        password = session['password']
-        filename = account + '.ics'
-        data = session['data']
-        cal = CurriculumCalendar(account, password, filename, data)
-    try:
-        if not os.path.exists(filename):
-            cal.gen_cal()
+        cal.gen_cal()
         directory = os.getcwd()
         response = make_response(send_from_directory(
             directory, filename, as_attachment=True))
         return response
-    except Exception:
-        return redirect(url_for('hut.login'))
 
 
 @hut.route('/signout')
