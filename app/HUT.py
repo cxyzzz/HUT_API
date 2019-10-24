@@ -762,7 +762,7 @@ class JobCalendar(object):
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/careers'
         else:
             params['organisers'] = kwargs['organisers'] if('organisers' in kwargs.keys()) else ''
-            param['type'] = None if(param['type'] == 'inner')
+            param['type'] = None if(param['type'] == 'inner') else 2
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/jobfairs'
 
         datas = []
