@@ -463,7 +463,7 @@ class Student(object):
                 data['kb' + str(i)+'_'+str(j)] = '&nbsp;'
         for i in kb:
             dic_key = 'kb' + i['kcsj'][0:1]+'_' + \
-                str(int((int(i['kcsj'][2:3])+int(i['kcsj'][4:])+1)/4))
+                str(int((int(i['kcsj'][2:3])+int(i['kcsj'][-1:])+1)/4))
             if data[dic_key] != '&nbsp;':
                 m = data[dic_key]['multy']
                 m += 1
