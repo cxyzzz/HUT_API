@@ -819,6 +819,7 @@ class JobCalendar(object):
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/jobfairs'
 
         datas = []
+       #  print(self.dates)
         for date in self.dates:
             params['day'] = date
             while(True):
@@ -830,10 +831,11 @@ class JobCalendar(object):
                     res = t.get_result()
                     # print(res.url)
                     res = res.json()
-                    # print('>' * 50)
-                    # print(res)
+                    print('>' * 50)
+                    print(res)
                     if(res['data']):
-                        datas.append(res['data'][0])
+                        for data in res['data']:
+                            datas.append(data)
                         # time.sleep(0.5)
                     break
                 except Exception as err:
@@ -887,8 +889,8 @@ class JobCalendar(object):
 if __name__ == '__main__':
     # t = Student()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
-    t = CurriculumCalendar()
-    t.gen_cal()
-    # t = JobCalendar()
-    # t.get_datas()
+    # t = CurriculumCalendar()
+    # t.gen_cal()
+    t = JobCalendar(m = 2)
+    print(t.get_datas())
     pass
