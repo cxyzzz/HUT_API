@@ -76,7 +76,9 @@ class SqliteDb(object):
         # return
         execute = ('''INSERT INTO STUDENT (NJ,YXMC,ZYMC,BJ,XH,XM,XB,DH,EMAIL,KSH)
         VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' % (
-            data['nj'], data['yxmc'], data['zymc'], data['bj'], data['xh'], data['xm'], data['xb'], data['dh'], data['email'], data['ksh']))
+            data['nj'], data['yxmc'], data['zymc'], data['bj'],
+            data['xh'], data['xm'], data['xb'], data['dh'],
+            data['email'], data['ksh']))
         self.cur.execute(execute)
         self.conn.commit()
 
@@ -537,7 +539,7 @@ class Student(object):
                         # 获取此班级所有学生
                         while(True):
                             id += 1
-                            if(xy_zy[1] == '00' or xy_zy[1] == '11' or xy_zy[1] == '15' or xy_zy[1] == '70' or xy_zy[0] == '110'):
+                            if((xy_zy[1] in ('00', '11', '15', '70')) or xy_zy[0] == '110'):
                                 if(id % 30 == 0):
                                     print('long id sleep %.2f' %
                                           (id/100))
@@ -563,7 +565,7 @@ class Student(object):
                         # 防止当某个班级没有 00 这个编号时出现直接跳过此班级的情况
                         while(True):
                             id += 1
-                            if(xy_zy[1] == '00' or xy_zy[1] == '11' or xy_zy[1] == '15' or xy_zy[1] == '70' or xy_zy[0] == '110'):
+                            if((xy_zy[1] in ('00', '11', '15', '70')) or xy_zy[0] == '110'):
                                 if(id % 30 == 0):
                                     print('long id sleep %.2f' %
                                           (id/100))
@@ -672,10 +674,12 @@ class CurriculumCalendar(object):
                     # print('>'*50)
 
                     event.add('DTSTAMP', datetime.now())
-                    event.add('DTSTART', datetime(int(sta_year), int(sta_mon), int(sta_day), int(sta_hour), int(sta_minu), 0,
-                                                  tzinfo=tz))
-                    event.add('DTEND', datetime(int(sta_year), int(sta_mon), int(sta_day), int(end_hour), int(end_minu), 0,
-                                                tzinfo=tz))
+                    event.add('DTSTART', datetime(int(sta_year), int(sta_mon),
+                                                  int(sta_day), int(sta_hour),
+                                                  int(sta_minu), 0, tzinfo=tz))
+                    event.add('DTEND', datetime(int(sta_year), int(sta_mon),
+                                                int(sta_day), int(end_hour),
+                                                int(end_minu), 0, tzinfo=tz))
                     event.add('SUMMARY', j['kcmc'])
                     event.add('UID', str(uuid.uuid1()))
                     event.add('LOCATION', '%s %s' %
@@ -715,20 +719,21 @@ class CurriculumCalendar(object):
                 # print('>'*50)
 
                 event.add('DTSTAMP', datetime.now())
-                event.add('DTSTART', datetime(int(sta_year), int(sta_mon), int(sta_day), int(sta_hour), int(sta_minu), 0,
-                                            tzinfo=tz))
+                event.add('DTSTART', datetime(int(sta_year), int(sta_mon),
+                                              int(sta_day), int(sta_hour),
+                                              int(sta_minu), 0, tzinfo=tz))
                 event.add('DTEND', datetime(int(sta_year), int(sta_mon), int(sta_day), int(end_hour), int(end_minu), 0,
                                             tzinfo=tz))
                 event.add('SUMMARY', j['kcmc'])
                 event.add('UID', str(uuid.uuid1()))
                 event.add('LOCATION', '%s %s' %
-                        (j['jsmc'], j['jsxm']))
+                          (j['jsmc'], j['jsxm']))
                 event.add('DESCRIPTION', '第%s节 - 第%s节\n%s\n%s' %
-                        (j['kcsj'][2:3], j['kcsj'][-1:], j['jsmc'], j['jsxm']))
+                          (j['kcsj'][2:3], j['kcsj'][-1:], j['jsmc'], j['jsxm']))
                 parameters = {
                     'FREQ': 'WEEKLY',
                     'UNTIL': datetime(int(end_year), int(end_mon), int(end_day), int(end_hour), int(end_minu), 0,
-                                    tzinfo=tz),
+                                      tzinfo=tz),
                     'INTERVAL': '1'
                 }
                 event.add('RRULE', parameters)
@@ -745,7 +750,11 @@ class ElectricityFeeInquiry(object):
         'User-Agent': ('Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/PKQ1.180904.001; wv) '
                        'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
                        'Chrome/74.0.3729.157 Mobile Safari/537.36 Wanxiao/5.0.2'),
-        'Referer': 'http://h5cloud.17wanxiao.com:8080/CloudPayment/bill/selectPayProject.do?txcode=elecdetails&interurl=elecdetails&payProId=1567&amtflag=0&payamt=0&payproname=%E8%B4%AD%E7%94%B5%E6%94%AF%E5%87%BA&img=https://cloud.59wanmei.com:8443/CapecYunPay/images/project/img-nav_2.png&subPayProId=',
+        'Referer': ('http://h5cloud.17wanxiao.com:8080'
+                    '/CloudPayment/bill/selectPayProject.do'
+                    '?txcode=elecdetails&interurl=elecdetails&payProId=1567'
+                    '&amtflag=0&payamt=0&payproname=%E8%B4%AD%E7%94%B5%E6%94%AF%E5%87%BA'
+                    '&img=https://cloud.59wanmei.com:8443/CapecYunPay/images/project/img-nav_2.png&subPayProId='),
         'accept-encoding': 'gzip, deflate'
     }
 
@@ -781,7 +790,9 @@ class ElectricityFeeInquiry(object):
 class JobCalendar(object):
     HOST = 'http://job.hut.edu.cn/module/'
     INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
-    INFO_API_HOST = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token=yxqqnn0000000012&career_id='
+    INFO_API_HOST = ('http://student.bibibi.net'
+                     '/index.php?r=career/ajaxgetcareerdetail'
+                     '&token=yxqqnn0000000012&career_id=')
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
                        'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
@@ -815,11 +826,11 @@ class JobCalendar(object):
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/careers'
         else:
             params['organisers'] = kwargs['organisers'] if('organisers' in kwargs.keys()) else ''
-            param['type'] = None if(param['type'] == 'inner') else 2
+            params['type'] = None if(params['type'] == 'inner') else 2
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/jobfairs'
 
         datas = []
-       #  print(self.dates)
+        # print(self.dates)
         for date in self.dates:
             params['day'] = date
             while(True):
@@ -891,6 +902,6 @@ if __name__ == '__main__':
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
     # t = CurriculumCalendar()
     # t.gen_cal()
-    t = JobCalendar(m = 2)
+    t = JobCalendar(m=2)
     print(t.get_datas())
     pass
