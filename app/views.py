@@ -52,6 +52,7 @@ def login():
 @hut.route('/', methods=['GET', 'POST'])
 def index():
     if session.get('data'):
+        print(session['data'])
         return render_template('index.html', **session['data'])
     if (session.get('account') and session.get('password')):
         account = session['account']

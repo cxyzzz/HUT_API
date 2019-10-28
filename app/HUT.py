@@ -54,7 +54,7 @@ class SqliteDb(object):
         try:
             self.cur.execute('''CREATE TABLE STUDENT
                     (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    RXNF        CHAR(5);
+                    RXNF        CHAR(5),
                     NJ          CHAR(5),
                     YXMC        CHAR(30),
                     ZYMC        CHAR(15),
@@ -89,14 +89,13 @@ class SqliteDb(object):
 
 
 class MyThread(threading.Thread):
-    def __init__(self, func, *args, **kwargs):
+    def __init__(self, func, *args):
         super(MyThread, self).__init__()
         self.func = func
         self.args = args
-        self.kwargs = kwargs
 
     def run(self):
-        self.result = self.func(*self.args, **self.kwargs)
+        self.result = self.func(*self.args)
 
     def get_result(self):
         try:
@@ -170,6 +169,7 @@ class Student(object):
         try:
             res = self.session.get(self.URL, params=params,
                                    timeout=5, headers=self.HEADERS)
+            # print(res.text)
             res = res.json()
         except Exception as err:
             time.sleep(1)
@@ -504,15 +504,17 @@ class Student(object):
         data = {
             'method': 'getUserInfo'
         }
-        njs = ('19', '18', '17', '16')
-        bj = 0
-        id = 0
         xy_list = json.load(open('学院.json', 'r'))
         xy_zys = []
         for xy in xy_list:
             for id in xy['ids']:
                 for zy in id['zy']:
                     xy_zys.append((id['id'], zy['id']))
+
+        njs = ('19', '18', '17', '16')
+        bj = 0
+        id = 0
+
         for nj in njs:
             print(nj)
             for xy_zy in xy_zys:
@@ -524,7 +526,7 @@ class Student(object):
                     data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
                         str(bj).zfill(2) + str(id).zfill(2)
                     if(not self.db.xh_search(data['xh'])):
-                        t = MyThread(self.get_data, (data,))
+                        t = MyThread(self.get_data, data)
                         t.start()
                         t.join()
                         res = t.get_result()
@@ -547,7 +549,7 @@ class Student(object):
                             data['xh'] = str(
                                 nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
                             if(not self.db.xh_search(data['xh'])):
-                                t = MyThread(self.get_data, (data,))
+                                t = MyThread(self.get_data, data)
                                 t.start()
                                 t.join()
                                 res = t.get_result()
@@ -573,7 +575,7 @@ class Student(object):
                             data['xh'] = str(
                                 nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
                             if(not self.db.xh_search(data['xh'])):
-                                t = MyThread(self.get_data, (data,))
+                                t = MyThread(self.get_data, data)
                                 t.start()
                                 t.join()
                                 res = t.get_result()
@@ -596,7 +598,7 @@ class Student(object):
                         id = 0
                         data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
                             str(bj).zfill(2) + str(id).zfill(2)
-                        t = MyThread(self.get_data, (data,))
+                        t = MyThread(self.get_data, data)
                         t.start()
                         t.join()
                         res = t.get_result()
@@ -898,10 +900,10 @@ class JobCalendar(object):
 
 
 if __name__ == '__main__':
-    # t = Student()
+    t = Student()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
     # t = CurriculumCalendar()
     # t.gen_cal()
-    t = JobCalendar(m=2)
-    print(t.get_datas())
+    # t = JobCalendar(m = 2)
+    # print(t.get_datas())
     pass
