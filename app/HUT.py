@@ -901,6 +901,8 @@ class JobCalendar(object):
 
 if __name__ == '__main__':
     t = Student()
+    s = CurriculumCalendar(data=t.gen_Kb_json_data())
+    s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
     # t = CurriculumCalendar()
     # t.gen_cal()

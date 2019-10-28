@@ -51,9 +51,6 @@ def login():
 
 @hut.route('/', methods=['GET', 'POST'])
 def index():
-    if session.get('data'):
-        print(session['data'])
-        return render_template('index.html', **session['data'])
     if (session.get('account') and session.get('password')):
         account = session['account']
         password = session['password']
@@ -61,7 +58,8 @@ def index():
         if student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
-        session['data'] = student.gen_Kb_json_data()
+        if not session.get('data'):
+            session['data'] = student.gen_Kb_json_data()
         data = student.gen_Kb_web_data(session['data'])
         return render_template('index.html', **data)
     else:
@@ -70,6 +68,12 @@ def index():
 
 @hut.route('/gen_cal')
 def gen_cur_cal():
+    if session.get('data'):
+        account = session['account']
+        password = session['password']
+        filename = account + '.ics'
+        cal = CurriculumCalendar(account, password, filename, session['data'])
+
     if (request.args.get('xh') and request.args.get('pwd')):
         account = request.args.get('xh')
         password = request.args.get('pwd')
@@ -78,11 +82,11 @@ def gen_cur_cal():
         if cal.student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
-        cal.gen_cal()
-        directory = os.getcwd()
-        response = make_response(send_from_directory(
-            directory, filename, as_attachment=True))
-        return response
+    cal.gen_cal()
+    directory = os.getcwd()
+    response = make_response(send_from_directory(
+        directory, filename, as_attachment=True))
+    return response
 
 
 @hut.route('/signout')
