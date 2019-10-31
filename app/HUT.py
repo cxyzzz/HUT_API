@@ -89,13 +89,14 @@ class SqliteDb(object):
 
 
 class MyThread(threading.Thread):
-    def __init__(self, func, *args):
+    def __init__(self, func, *args, **kwargs):
         super(MyThread, self).__init__()
         self.func = func
         self.args = args
+        self.kwargs = kwargs
 
     def run(self):
-        self.result = self.func(*self.args)
+        self.result = self.func(*self.args, **self.kwargs)
 
     def get_result(self):
         try:
@@ -837,8 +838,9 @@ class JobCalendar(object):
             params['day'] = date
             while(True):
                 try:
-                    t = MyThread(self.session.get, self.url, params=params,
-                                 timeout=5, headers=self.HEADERS)
+                    s = self.session.get(
+                        self.url, params=params, headers=self.HEADERS)
+                    t = MyThread(self.session.get, self.url, params=params, headers=self.HEADERS)
                     t.start()
                     t.join()
                     res = t.get_result()
@@ -900,13 +902,12 @@ class JobCalendar(object):
 
 
 if __name__ == '__main__':
-    t = Student()
-    s = t.getUserInfo('19414120001')
+    # t = Student()
+    # s = t.getUserInfo('19414120001')
     # s = CurriculumCalendar(data=t.gen_Kb_json_data())
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
-    # t = CurriculumCalendar()
-    # t.gen_cal()
-    # t = JobCalendar(m = 2)
+    t = JobCalendar(m=5)
+    s = t.gen_cal()
     # print(t.get_datas())
     pass
