@@ -838,8 +838,8 @@ class JobCalendar(object):
             params['day'] = date
             while(True):
                 try:
-                    s = self.session.get(
-                        self.url, params=params, headers=self.HEADERS)
+                    # s = self.session.get(
+                    #     self.url, params=params, headers=self.HEADERS)
                     t = MyThread(self.session.get, self.url, params=params, headers=self.HEADERS)
                     t.start()
                     t.join()
@@ -856,8 +856,6 @@ class JobCalendar(object):
                 except Exception as err:
                     print(err)
                     time.sleep(1)
-            if(not res['data']):
-                break
         return datas
 
     def gen_cal(self, **kwargs):
