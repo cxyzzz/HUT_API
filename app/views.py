@@ -169,15 +169,15 @@ def gen_job_cal():
             return("sf 值错误，可选值：'宣讲会'，'双选会'")
         else:
             suffix = 'getcareers'
-        typ = request.args.get('tp')
-        if(typ == '校内'):
-            typ = 'inner'
-        elif(typ == '校外'):
-            typ = 'outer'
-        elif(typ):
+        type_ = request.args.get('tp')
+        if(type_ == '校内'):
+            type_ = 'inner'
+        elif(type_ == '校外'):
+            type_ = 'outer'
+        elif(type_):
             return("tp 值错误，可选值：'校内'，'校外'")
         else:
-            typ = 'inner'
+            type_ = 'inner'
     else:
         suffix = request.form.get('sf')
         if(suffix == '宣讲会'):
@@ -189,18 +189,18 @@ def gen_job_cal():
         else:
             suffix = 'getcareers'
 
-        typ = request.form.get('tp')
-        if(typ == '校内'):
-            typ = 'inner'
-        elif(typ == '校外'):
-            typ = 'outer'
-        elif(typ):
+        type_ = request.form.get('tp')
+        if(type_ == '校内'):
+            type_ = 'inner'
+        elif(type_ == '校外'):
+            type_ = 'outer'
+        elif(type_):
             return("tp 值错误，可选值：'校内'，'校外'")
         else:
-            typ = 'inner'
+            type_ = 'inner'
 
     job = JobCalendar(suffix=suffix)
-    data = job.gen_cal(type=typ)
+    data = job.gen_cal(type=type_)
     response = make_response(data)
     response.headers['Content-Type'] = 'text/plain'
     return response
