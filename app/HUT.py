@@ -792,10 +792,12 @@ class ElectricityFeeInquiry(object):
 
 class JobCalendar(object):
     HOST = 'http://job.hut.edu.cn/module/'
-    INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
-    INFO_API_HOST = ('http://student.bibibi.net'
-                     '/index.php?r=career/ajaxgetcareerdetail'
-                     '&token=yxqqnn0000000012&career_id=')
+    CAREER_INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
+    CAREER_INFO_API_HOST = ('http://student.bibibi.net'
+                            '/index.php?r=career/ajaxgetcareerdetail'
+                            '&token=yxqqnn0000000012&career_id=')
+    FAIR_INFO_HOST = 'http://job.hut.edu.cn/detail/jobfair?id='
+    FAIR_INFO_API_HOST = 'https://s.bysjy.com.cn/index.php?r=chance/ajaxgetjobfairdetail&token=yxqqnn0000000012&fair_id='
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
                        'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
@@ -850,6 +852,18 @@ class JobCalendar(object):
                     print(res)
                     if(res['data']):
                         for data in res['data']:
+                            if(self.suffix == 'getcareers'):
+                                res = self.session.get(
+                                    self.CAREER_INFO_API_HOST + data['career_talk_id'])
+                            else:
+                                res = self.session.get(self.FAIR_INFO_API_HOST + data['fair_id'])
+                                res = res.json()
+                                companys = []
+                                for job in res['data']['job_list']:
+                                    if(job['company_name'] not in companys):
+                                        companys.append(job['company_name'])
+                                company_str = ', '.join(companys)
+                                data['company_name'] = company_str
                             datas.append(data)
                         # time.sleep(0.5)
                     break
@@ -875,15 +889,23 @@ class JobCalendar(object):
                                           tzinfo=tz))
             # event.add('DTEND', datetime(int(year), int(mon), int(day), int(sta_hour)+2, int(sta_minu), 0,
             #                             tzinfo=tz))
-            event.add('SUMMARY', data['meet_name'])
             event.add('UID', str(uuid.uuid1()))
             event.add('LOCATION', data['address'])
-            event.add('DESCRIPTION', '%s %s %s\n城市：%s 点击统计：%s\n企业属性：%s 行业类别: %s\n需求专业：%s\n%s' %
-                      (data['meet_day'], data['meet_time'], data['address'],
-                       data['city_name'], data['view_count'],
-                       data['company_property'], data['industry_category'],
-                       data['professionals'],
-                       self.INFO_HOST + data['career_talk_id']))
+            if(self.suffix == 'getcareers'):
+                event.add('SUMMARY', data['meet_name'])
+                event.add('DESCRIPTION', '%s %s %s\n城市：%s 点击统计：%s\n企业属性：%s 行业类别: %s\n需求专业：%s\n%s' %
+                          (data['meet_day'], data['meet_time'], data['address'],
+                           data['city_name'], data['view_count'],
+                           data['company_property'], data['industry_category'],
+                           data['professionals'],
+                           self.CAREER_INFO_HOST + data['career_talk_id']))
+            else:
+                event.add('SUMMARY', data['title'])
+                event.add('DESCRIPTION', '%s %s %s\n点击统计：%s\n组织者：%s\n参会企业：%s\n%s' %
+                          (data['meet_day'], data['meet_time'], data['address'],
+                           data['view_count'], data['organisers'], data['company_name'],
+                           self.FAIR_INFO_HOST + data['fair_id']))
+
             # parameters = {
             #     'FREQ': 'WEEKLY',
             #     'UNTIL': datetime(int(year), int(mon), int(day), int(sta_hour) + 2, int(sta_minu), 0,
@@ -894,9 +916,9 @@ class JobCalendar(object):
             cal.add_component(event)
         # s = str(cal.to_ical(), encoding='utf8')
         # print(s)
-        return(str(cal.to_ical(), encoding='utf8'))
-        # with open('jb.ics', 'w', encoding='utf8') as f:
-        #     f.write(str(cal.to_ical(), encoding='utf8'))
+        # return(str(cal.to_ical(), encoding='utf8'))
+        with open('jb.ics', 'w', encoding='utf8') as f:
+            f.write(str(cal.to_ical(), encoding='utf8'))
 
 
 if __name__ == '__main__':
@@ -905,7 +927,7 @@ if __name__ == '__main__':
     # s = CurriculumCalendar(data=t.gen_Kb_json_data())
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
-    t = JobCalendar(m=5)
-    s = t.gen_cal()
+    t = JobCalendar(suffix='getjobfairs', m=5)
+    s = t.gen_cal(type='outer')
     # print(t.get_datas())
     pass
