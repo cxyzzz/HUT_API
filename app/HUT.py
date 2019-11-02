@@ -792,11 +792,11 @@ class ElectricityFeeInquiry(object):
 
 class JobCalendar(object):
     HOST = 'http://job.hut.edu.cn/module/'
-    CAREER_INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
-    CAREER_INFO_API_HOST = ('http://student.bibibi.net'
-                            '/index.php?r=career/ajaxgetcareerdetail'
-                            '&token=yxqqnn0000000012&career_id=')
+    CAREER_INFO_HOST = 'http://job.hut.edu.cn/detail/career?id='
+    # CAREER_INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
+    CAREER_INFO_API_HOST = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token=yxqqnn0000000012&career_id='
     FAIR_INFO_HOST = 'http://job.hut.edu.cn/detail/jobfair?id='
+    # FAIR_INFO_HOST = 'https://m.bysjy.com.cn/student/chance/largemeetingdetails.html?token=yxqqnn0000000012&fair_id='
     FAIR_INFO_API_HOST = 'https://s.bysjy.com.cn/index.php?r=chance/ajaxgetjobfairdetail&token=yxqqnn0000000012&fair_id='
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
