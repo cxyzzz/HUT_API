@@ -1,13 +1,16 @@
 import os
 import requests
 import json
+from datetime import timedelta
 from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField
 from wtforms.validators import InputRequired
+import app
 from app.HUT import Student, CurriculumCalendar, ElectricityFeeInquiry, JobCalendar
 
+# app = create_app()
 hut = Blueprint('hut', __name__, template_folder='templates')
 
 
@@ -33,14 +36,15 @@ def login():
     if request.method == 'POST':
         if form.validate_on_submit():
             # print(request.form)
-            account = request.form.get("account", type=str, default=None)
-            password = request.form.get("password", type=str, default=None)
+            account = request.form.get('account', type=str, default=None)
+            password = request.form.get('password', type=str, default=None)
             student = Student(account, password)
             if student.HEADERS['token'] == '-1':
                 flash('用户名或密码错误...', category='error')
                 return render_template('login.html', form=form)
-
-            session.permanent = True
+            if(request.form.get('remember') == '1'):
+                session.permanent = True
+                app.permanent_session_lifetime = timedelta(hours=1)
             session['account'] = account
             session['password'] = password
             # print(session)
