@@ -190,7 +190,15 @@ success: 状态
 `http://218.75.197.123:83/app.do?method=getKscx&xh=#学号#`
 
 **返回值**  
-条件所限，尚未明晰
+返回 json 对象
+>bj: 班级  
+bz: 未知  
+jsmc: 教室名称  
+kcmc: 课程名称  
+ksjc: 考试节次  
+ksmc: 考试名称  
+ksqssj: 考试时间日期  
+xm: 姓名
 
 #### getEarlyWarnInfo
 

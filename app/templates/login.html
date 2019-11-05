@@ -63,6 +63,11 @@
         {{ form.account(style='color:red',class="form-control",placeholder='学号') }}
         {{ form.password.label(class="sr-only") }}
         {{ form.password(class="form-control",placeholder='密码') }}
+        <div class="remember">
+            <label>
+                <input type="checkbox" name="remember" value="1"> Remember me
+            </label>
+        </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
     <footer id="footer" class="footer" align="center">

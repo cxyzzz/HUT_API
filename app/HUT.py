@@ -621,7 +621,7 @@ class Student(object):
 
 
 class CurriculumCalendar(object):
-    def __init__(self, account=-1, password=-1, filename='kb.ics', data=()):
+    def __init__(self, account=-1, password=-1, filename='kb.ics', datas=()):
         self.account = os.getenv(
             'xh') if account == -1 else account      # 账号，默认使用全局变量 account
         self.password = os.getenv(
@@ -629,8 +629,8 @@ class CurriculumCalendar(object):
         self.student = Student(self.account, self.password)
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
-        self.data = self.student.gen_Kb_json_data() if (
-            not data) else data   # 所有课程的 json 数据
+        self.datas = self.student.gen_Kb_json_data() if (
+            not datas) else datas   # 所有课程的 json 数据
 
     def get_start_date(self):
         res = self.student.get_current_time()
@@ -748,6 +748,48 @@ class CurriculumCalendar(object):
             f.write(str(cal.to_ical(), encoding='utf8'))
 
 
+class ExaminationCalendar(object):
+    def __init__(self, account=-1, password=-1, filename='ks.ics'):
+        self.account = os.getenv(
+            'xh') if account == -1 else account      # 账号，默认使用全局变量 account
+        self.password = os.getenv(
+            'pwd') if password == -1 else password   # 密码，默认使用全局变量 password
+        self.student = Student(self.account, self.password)
+        self.filename = filename        # 日历文件名
+
+    def gen_cal(self):
+        tz = pytz.timezone('Asia/Shanghai')
+        cal = Calendar()
+        cal.add('PRODID', '-//Hoshizora //iCalendar 4.0.3')
+        cal.add('VERSION', '2.0')
+        cal.add('CALSCALE', 'GREGORIAN')
+        for data in self.student.getKscx():
+            event = Event()
+            event.add('DTSTAMP', datetime.now())
+
+            date, time_ = data['ksqssj'].split(' ')
+            sta_year, sta_mon, sta_day = date.split('-')
+            sta_time, end_time = time_.split('~')
+            sta_hour, sta_minu = sta_time.split(':')
+            end_hour, end_minu = end_time.split(':')
+            event.add('DTSTART', datetime(int(sta_year), int(sta_mon),
+                                          int(sta_day), int(sta_hour),
+                                          int(sta_minu), 0, tzinfo=tz))
+            event.add('DTEND', datetime(int(sta_year), int(sta_mon),
+                                        int(sta_day), int(end_hour),
+                                        int(end_minu), 0, tzinfo=tz))
+            event.add('SUMMARY', data['ksmc'] + '-' + data['kcmc'])
+            event.add('UID', str(uuid.uuid1()))
+            event.add('LOCATION', '%s' % data['jsmc'])
+            event.add('DESCRIPTION', '%s\n%s' % (data['kcmc'], data['ksjc']))
+            cal.add_component(event)
+
+        return(str(cal.to_ical(), encoding='utf8'))
+
+        # with open(self.filename, 'w', encoding='utf8') as f:
+        #     f.write(str(cal.to_ical(), encoding='utf8'))
+
+
 class ElectricityFeeInquiry(object):
     URL = 'http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoom.do'
     HEADERS = {
@@ -793,11 +835,11 @@ class ElectricityFeeInquiry(object):
 
 class JobCalendar(object):
     HOST = 'http://job.hut.edu.cn/module/'
-    CAREER_INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
-    CAREER_INFO_API_HOST = ('http://student.bibibi.net'
-                            '/index.php?r=career/ajaxgetcareerdetail'
-                            '&token=yxqqnn0000000012&career_id=')
+    CAREER_INFO_HOST = 'http://job.hut.edu.cn/detail/career?id='
+    # CAREER_INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
+    CAREER_INFO_API_HOST = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token=yxqqnn0000000012&career_id='
     FAIR_INFO_HOST = 'http://job.hut.edu.cn/detail/jobfair?id='
+    # FAIR_INFO_HOST = 'https://m.bysjy.com.cn/student/chance/largemeetingdetails.html?token=yxqqnn0000000012&fair_id='
     FAIR_INFO_API_HOST = 'https://s.bysjy.com.cn/index.php?r=chance/ajaxgetjobfairdetail&token=yxqqnn0000000012&fair_id='
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
@@ -928,7 +970,10 @@ if __name__ == '__main__':
     # s = CurriculumCalendar(data=t.gen_Kb_json_data())
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
-    t = JobCalendar(suffix='getjobfairs', m=5)
-    s = t.gen_cal(type='outer')
+    # t = JobCalendar()
+    # s = t.gen_cal()
+    t = ExaminationCalendar(
+        token='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NzI5MjIxMjcsImF1ZCI6IjE2NDA4MjAwMjE4In0.0wjgi9H7-MeTy4r1EBv2clKJkAhYfRsIWLqvULoagi0', xh='16408200218')
+    s = t.gen_cal()
     # print(t.get_datas())
     pass
