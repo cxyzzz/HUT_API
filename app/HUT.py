@@ -74,13 +74,13 @@ class SqliteDb(object):
 
     def insert(self, data):
         # return
-        execute = ('''INSERT INTO STUDENT (NJ,YXMC,ZYMC,BJ,XH,XM,XB,DH,EMAIL,KSH)
-        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' % (
+        execute = ('''INSERT INTO STUDENT (RXNF,NJ,YXMC,ZYMC,BJ,XH,XM,XB,DH,EMAIL,KSH)
+        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' % (data['rxnf'],
             data['nj'], data['yxmc'], data['zymc'], data['bj'],
             data['xh'], data['xm'], data['xb'], data['dh'],
             data['email'], data['ksh']))
         self.cur.execute(execute)
-        self.conn.commit()
+        # self.conn.commit()
 
     def xh_search(self, xh):
         execute = ("select xh from student where xh is %s" % (xh))
@@ -616,7 +616,8 @@ class Student(object):
                                 bj = 0
                             id = 0
                             break
-        self.db.conn.close()
+        self.db.conn.commit()
+	self.db.conn.close()
 
 
 class CurriculumCalendar(object):
@@ -922,7 +923,7 @@ class JobCalendar(object):
 
 
 if __name__ == '__main__':
-    # t = Student()
+    t = Student()
     # s = t.getUserInfo('19414120001')
     # s = CurriculumCalendar(data=t.gen_Kb_json_data())
     # s.gen_cal()
