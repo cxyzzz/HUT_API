@@ -75,10 +75,9 @@ class SqliteDb(object):
     def insert(self, data):
         # return
         execute = ('''INSERT INTO STUDENT (RXNF,NJ,YXMC,ZYMC,BJ,XH,XM,XB,DH,EMAIL,KSH)
-        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' % (data['rxnf'],
-            data['nj'], data['yxmc'], data['zymc'], data['bj'],
-            data['xh'], data['xm'], data['xb'], data['dh'],
-            data['email'], data['ksh']))
+        VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')''' % (
+            data['rxnf'], data['nj'], data['yxmc'], data['zymc'], data['bj'],
+            data['xh'], data['xm'], data['xb'], data['dh'], data['email'], data['ksh']))
         self.cur.execute(execute)
         # self.conn.commit()
 
@@ -657,9 +656,11 @@ class CurriculumCalendar(object):
                 for k in j['kkzc'].split(','):
                     sta_week, end_week = k.split('-')
                     self.start_date_datetime = datetime.strptime(self.start_date, "%Y-%m-%d") + \
-                        timedelta(days=(int(sta_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                        timedelta(days=(int(sta_week)-1) *
+                                  7+(int(j['kcsj'][:1]) - 1))
                     end_date_datetime = self.start_date_datetime + \
-                        timedelta(days=(int(end_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                        timedelta(days=(int(end_week)-1) *
+                                  7+(int(j['kcsj'][:1]) - 1))
                     sta_year, sta_mon, sta_day = datetime.strftime(
                         self.start_date_datetime, '%Y-%m-%d').split('-')
                     end_year, end_mon, end_day = datetime.strftime(
@@ -702,9 +703,11 @@ class CurriculumCalendar(object):
                 sta_week = j['kkzc']
                 end_week = j['kkzc']
                 self.start_date_datetime = datetime.strptime(self.start_date, "%Y-%m-%d") + \
-                    timedelta(days=(int(sta_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                    timedelta(days=(int(sta_week)-1) *
+                              7+(int(j['kcsj'][:1]) - 1))
                 end_date_datetime = self.start_date_datetime + \
-                    timedelta(days=(int(end_week)-1)*7+(int(j['kcsj'][:1]) - 1))
+                    timedelta(days=(int(end_week)-1) *
+                              7+(int(j['kcsj'][:1]) - 1))
                 sta_year, sta_mon, sta_day = datetime.strftime(
                     self.start_date_datetime, '%Y-%m-%d').split('-')
                 end_year, end_mon, end_day = datetime.strftime(
@@ -749,6 +752,10 @@ class CurriculumCalendar(object):
 
 
 class ExaminationCalendar(object):
+    """
+        生成考试日历
+    """
+
     def __init__(self, account=-1, password=-1, filename='ks.ics'):
         self.account = os.getenv(
             'xh') if account == -1 else account      # 账号，默认使用全局变量 account
@@ -856,7 +863,8 @@ class JobCalendar(object):
         self.url = self.HOST + suffix
         self.dates = []
         for i in range(m):
-            self.dates.append(datetime.strftime(datetime.now() + timedelta(days=i), '%Y-%m-%d'))
+            self.dates.append(datetime.strftime(
+                datetime.now() + timedelta(days=i), '%Y-%m-%d'))
         self.cal = Calendar()
         self.session = requests.Session()
 
@@ -869,11 +877,14 @@ class JobCalendar(object):
             'type': kwargs['type'] if('type' in kwargs.keys()) else 'inner'
         }
         if(self.suffix == 'getcareers'):
-            params['professionals'] = kwargs['professionals'] if('professionals' in kwargs.keys()) else ''
-            params['career_type'] = kwargs['career_type'] if('career_type' in kwargs.keys()) else ''
+            params['professionals'] = kwargs['professionals'] if(
+                'professionals' in kwargs.keys()) else ''
+            params['career_type'] = kwargs['career_type'] if(
+                'career_type' in kwargs.keys()) else ''
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/careers'
         else:
-            params['organisers'] = kwargs['organisers'] if('organisers' in kwargs.keys()) else ''
+            params['organisers'] = kwargs['organisers'] if(
+                'organisers' in kwargs.keys()) else ''
             params['type'] = None if(params['type'] == 'inner') else 2
             self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/jobfairs'
 
@@ -885,7 +896,8 @@ class JobCalendar(object):
                 try:
                     # s = self.session.get(
                     #     self.url, params=params, headers=self.HEADERS)
-                    t = MyThread(self.session.get, self.url, params=params, headers=self.HEADERS)
+                    t = MyThread(self.session.get, self.url,
+                                 params=params, headers=self.HEADERS)
                     t.start()
                     t.join()
                     res = t.get_result()
@@ -899,7 +911,8 @@ class JobCalendar(object):
                                 res = self.session.get(
                                     self.CAREER_INFO_API_HOST + data['career_talk_id'])
                             else:
-                                res = self.session.get(self.FAIR_INFO_API_HOST + data['fair_id'])
+                                res = self.session.get(
+                                    self.FAIR_INFO_API_HOST + data['fair_id'])
                                 res = res.json()
                                 companys = []
                                 for job in res['data']['job_list']:
@@ -965,15 +978,14 @@ class JobCalendar(object):
 
 
 if __name__ == '__main__':
-    t = Student()
+    # t = Student()
     # s = t.getUserInfo('19414120001')
     # s = CurriculumCalendar(data=t.gen_Kb_json_data())
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
     # t = JobCalendar()
     # s = t.gen_cal()
-    t = ExaminationCalendar(
-        token='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NzI5MjIxMjcsImF1ZCI6IjE2NDA4MjAwMjE4In0.0wjgi9H7-MeTy4r1EBv2clKJkAhYfRsIWLqvULoagi0', xh='16408200218')
+    t = ExaminationCalendar()
     s = t.gen_cal()
     # print(t.get_datas())
     pass
