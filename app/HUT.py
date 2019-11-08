@@ -617,7 +617,7 @@ class Student(object):
                             id = 0
                             break
         self.db.conn.commit()
-	self.db.conn.close()
+        self.db.conn.close()
 
 
 class CurriculumCalendar(object):
