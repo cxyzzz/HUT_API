@@ -983,9 +983,9 @@ if __name__ == '__main__':
     # s = CurriculumCalendar(data=t.gen_Kb_json_data())
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
-    # t = JobCalendar()
-    # s = t.gen_cal()
-    t = ExaminationCalendar()
+    t = JobCalendar()
     s = t.gen_cal()
+    # t = ExaminationCalendar()
+    # s = t.gen_cal()
     # print(t.get_datas())
     pass
