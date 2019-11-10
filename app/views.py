@@ -49,11 +49,11 @@ def login():
             session['password'] = password
             # print(session)
             return redirect(url_for('hut.index'))
-        print('*'*50)
+        # print('*'*50)
         return redirect(url_for('hut.login'))
 
 
-@hut.route('/', methods=['GET', 'POST'])
+@hut.route('/')
 def index():
     if (session.get('account') and session.get('password')):
         account = session['account']
@@ -62,9 +62,15 @@ def index():
         if student.HEADERS['token'] == '-1':
             flash('用户名或密码错误...', category='error')
             return render_template('login.html', form=MyForm())
+        xh = request.args.get('xh')
+        if xh != session.get('xh'):
+            session['xh'] = xh
+            session['data'] = student.gen_Kb_json_data(xh)
         if not session.get('data'):
-            session['data'] = student.gen_Kb_json_data()
-        data = student.gen_Kb_web_data(session['data'])
+            session['data'] = student.gen_Kb_json_data(xh)
+        # print(session)
+        data = student.gen_Kb_web_data(kb=session['data'])
+        # print(data)
         return render_template('index.html', **data)
     else:
         return redirect(url_for('hut.login'))
@@ -110,7 +116,7 @@ def electricity_fee_inquiry():
         xh = request.form.get('xh')
         ld = request.form.get('ld')
         qs = request.form.get('qs')
-    print('%s-%s-%s' % (xh, ld, qs))
+    # print('%s-%s-%s' % (xh, ld, qs))
     if xh not in ('河东', '河西'):
         return "校区错误，可选值：河东、河西"
     else:

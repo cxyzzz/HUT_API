@@ -57,6 +57,10 @@
             <font title="姓名">{{ user.xm }}</font>
             <font title="学号">{{ user.xh }}</font>
         </div>
+        <form action="/" method="get" align="center">
+            <input id="xh" name="xh" title="学号(如果内容不变请刷新页面)" placeholder="学号(如果内容不变请刷新页面)" style="color:red" type="text" value=''>
+            <input type="submit" value="给我搜" />
+        </form>
         <table id="kbtable" align="center" border="1" cellspacing="0" cellpadding="0" class="curriculum">
             <tbody>
                 <tr>
@@ -637,13 +641,13 @@
                         <div id="7-5" class="kbcontent">&nbsp;</div>
                     </td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <th>备注:</th>
                     <td colspan="7" align="left">综合实习 陈卫兵 17-18周;嵌入式系统 1-8周;DSP应用技术 1-8周;LTE技术与实践
                         1-10周;现代光通信网络
                         1-10周;嵌入式系统课程设计 叶玮琼 16周;DSP应用技术课程设计 龙永新 14周;LTE技术与实践课程设计 刘立 15周;通信网络的规划设计与维护 1-8周;
                     </td>
-                </tr>
+                </tr> -->
             </tbody>
         </table>
         <div class="post-widgets">

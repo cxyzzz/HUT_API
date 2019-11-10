@@ -162,8 +162,9 @@ class Student(object):
             self.HEADERS['token'] = res['token']
             return session
         else:
+            self.HEADERS['token'] = res['token']
             print(res['msg'])
-            exit(0)
+            # exit(0)
 
     def get_data(self, params):
         try:
@@ -196,7 +197,7 @@ class Student(object):
         res = self.get_data(params)
         return res
 
-    def getKbcxAzc(self, zc=''):
+    def getKbcxAzc(self, zc='', xh=''):
         """ 课表查询,默认查询当前周
             返回数据：
                 [
@@ -216,7 +217,7 @@ class Student(object):
         xnxqid = s['xnxqh']
         params = {
             'method': 'getKbcxAzc',
-            'xh': self.account,
+            'xh': xh if xh else self.account,
             'xnxqid': xnxqid,
             'zc': s['zc'] if not zc else zc
         }
@@ -436,13 +437,13 @@ class Student(object):
         res = self.get_data(params)
         return res
 
-    def gen_Kb_json_data(self):
+    def gen_Kb_json_data(self, xh=''):
         """
             生成所有课程的 json 数据
         """
         data = []
         for i in range(1, 31):
-            t = MyThread(self.getKbcxAzc, (i,))
+            t = MyThread(self.getKbcxAzc, zc=i, xh=xh)
             t. start()
             t.join()
             res = t.get_result()
@@ -453,13 +454,13 @@ class Student(object):
                         data.append(j)
         return data
 
-    def gen_Kb_web_data(self, kb=()):
+    def gen_Kb_web_data(self, xh='', kb=''):
         """
             生成网页所需的总课表数据
         """
         data = {}
-        kb = kb if kb else self.gen_Kb_json_data()
-
+        kb = kb if kb else self.gen_Kb_json_data(xh)
+        # print(kb)
         for i in range(1, 8):
             for j in range(1, 8):
                 data['kb' + str(i)+'_'+str(j)] = '&nbsp;'
@@ -620,7 +621,7 @@ class Student(object):
 
 
 class CurriculumCalendar(object):
-    def __init__(self, account=-1, password=-1, filename='kb.ics', datas=()):
+    def __init__(self, account=-1, password=-1, filename='kb.ics'):
         self.account = os.getenv(
             'xh') if account == -1 else account      # 账号，默认使用全局变量 account
         self.password = os.getenv(
@@ -628,8 +629,6 @@ class CurriculumCalendar(object):
         self.student = Student(self.account, self.password)
         self.start_date = self.get_start_date()    # 学期起始日期，格式为 %Y-%m-%d
         self.filename = filename        # 日历文件名
-        self.datas = self.student.gen_Kb_json_data() if (
-            not datas) else datas   # 所有课程的 json 数据
 
     def get_start_date(self):
         res = self.student.get_current_time()
@@ -638,10 +637,12 @@ class CurriculumCalendar(object):
         return datetime.strftime(
             start_date_datetime, '%Y-%m-%d')
 
-    def gen_cal(self):
+    def gen_cal(self, xh='', datas=()):
         """
             生成日历文件，文件名为 self.filename，路径为当前路径
         """
+        self.datas = self.student.gen_Kb_json_data(xh) if (
+            not datas) else datas   # 所有课程的 json 数据
 
         tz = pytz.timezone('Asia/Shanghai')
 
@@ -650,7 +651,7 @@ class CurriculumCalendar(object):
         cal.add('VERSION', '2.0')
         cal.add('CALSCALE', 'GREGORIAN')
         # print(self.data)
-        for j in self.data:
+        for j in self.datas:
             event = Event()
             try:
                 for k in j['kkzc'].split(','):
@@ -903,8 +904,8 @@ class JobCalendar(object):
                     res = t.get_result()
                     # print(res.url)
                     res = res.json()
-                    print('>' * 50)
-                    print(res)
+                    # print('>' * 50)
+                    # print(res)
                     if(res['data']):
                         for data in res['data']:
                             if(self.suffix == 'getcareers'):
@@ -978,13 +979,14 @@ class JobCalendar(object):
 
 
 if __name__ == '__main__':
-    # t = Student()
-    # s = t.getUserInfo('19414120001')
-    # s = CurriculumCalendar(data=t.gen_Kb_json_data())
+    t = Student()
+    ss = t.gen_Kb_web_data(kb=t.gen_Kb_json_data(xh='18401100609'))
+    # s = t.getUserInfo()
+    # s = CurriculumCalendar()
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
-    t = JobCalendar()
-    s = t.gen_cal()
+    # t = JobCalendar()
+    # s = t.gen_cal()
     # t = ExaminationCalendar()
     # s = t.gen_cal()
     # print(t.get_datas())
