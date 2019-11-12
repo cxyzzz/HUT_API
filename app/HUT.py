@@ -497,7 +497,7 @@ class Student(object):
                 if('key2' in locals()):
                     data[key2] = data[dic_key]
                     del key2
-        data['user'] = self.getUserInfo()
+        data['user'] = self.getUserInfo(xh)
         return data
 
     def gen_user_db(self, db):
@@ -980,7 +980,7 @@ class JobCalendar(object):
 
 if __name__ == '__main__':
     t = Student()
-    ss = t.gen_Kb_web_data(kb=t.gen_Kb_json_data(xh='18401100609'))
+    ss = t.gen_Kb_web_data(xh='18401100609')
     # s = t.getUserInfo()
     # s = CurriculumCalendar()
     # s.gen_cal()

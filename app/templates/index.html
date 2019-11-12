@@ -58,9 +58,12 @@
             <font title="学号">{{ user.xh }}</font>
         </div>
         <form action="/" method="get" align="center">
-            <input id="xh" name="xh" title="学号(如果内容不变请刷新页面)" placeholder="学号(如果内容不变请刷新页面)" style="color:red" type="text" value=''>
+            <input id="xh" name="xh" title="学号(如果内容不变请刷新页面)" placeholder="学号(如果内容不变请刷新页面)" style="color:red" type="text"
+                value=''>
             <input type="submit" value="给我搜" />
         </form>
+
+
         <table id="kbtable" align="center" border="1" cellspacing="0" cellpadding="0" class="curriculum">
             <tbody>
                 <tr>
@@ -773,25 +776,26 @@
                     $('[rel="icon"]').attr('href', "{{ url_for('static',filename='images/avatar.png') }}");
                     document.title = '(ฅ>ω<*ฅ) 噫又好了~' + OriginTitile;
                     titleTime = setTimeout(function () {
-                            document.title = OriginTitile;
-                        },
+                        document.title = OriginTitile;
+                    },
                         2000);
                 }
             });
         </script>
         </script>
-        
+
         <footer id="footer" class="footer">
             <div class="footer-inner">
-                <div class="copyright">© 
-                    <span itemprop="copyrightYear">2019</span> 
+                <div class="copyright">©
+                    <span itemprop="copyrightYear">2019</span>
                     <span class="with-love" id="animate">
-                        <i class="fa fa-heart"></i> 
+                        <i class="fa fa-heart"></i>
                     </span>
                     <span class="author" itemprop="copyrightHolder">𝐂𝐡𝐞𝐧</span>
                 </div>
                 <div class="busuanzi-count">
-                    <script pjax="" async="" src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    <script pjax="" async=""
+                        src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
                     <span class="post-meta-item-icon"><i class="fa fa-user-secret"></i> </span><span class="site-uv"
                         title="总访客量"><span class="busuanzi-value" id="busuanzi_value_site_uv"></span> </span><span
                         class="post-meta-divider">|</span> <span class="post-meta-item-icon"><i class="fa fa-eye"></i>

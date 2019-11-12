@@ -69,8 +69,8 @@ def index():
         if not session.get('data'):
             session['data'] = student.gen_Kb_json_data(xh)
         # print(session)
-        data = student.gen_Kb_web_data(kb=session['data'])
-        # print(data)
+        data = student.gen_Kb_web_data(kb=session['data'], xh=xh)
+        print(data['user'])
         return render_template('index.html', **data)
     else:
         return redirect(url_for('hut.login'))
