@@ -246,7 +246,7 @@ xm: 姓名
 `http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoom.do?payProId=#支付订单ID#&schoolcode=#学校代码#&optype=#状态码#&areaid=#校区ID#&buildid=#楼栋ID#&unitid=#单元ID#&levelid=#等级ID#&businesstype=#业务类型#`
 
 以下查询中不变的值：
-`payProId` 随机生成一个整数即可
+`payProId` 随机生成一个大于1000的整数即可
 `schoolcode` 为学校代码，请自行查询
 `businesstype=2`
 

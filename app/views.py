@@ -109,23 +109,24 @@ def signout():
 def electricity_fee_inquiry():
     elec = ElectricityFeeInquiry()
     if request.method == 'GET':
-        xh = request.args.get('xh')
+        xq = request.args.get('xq')
         ld = request.args.get('ld')
         qs = request.args.get('qs')
     else:
-        xh = request.form.get('xh')
+        xq = request.form.get('xq')
         ld = request.form.get('ld')
         qs = request.form.get('qs')
-    # print('%s-%s-%s' % (xh, ld, qs))
-    if xh not in ('河东', '河西'):
+    print('%s-%s-%s' % (xq, ld, qs))
+    if xq not in ('河东', '河西'):
         return "校区错误，可选值：河东、河西"
     else:
-        if xh == '河东':
+        if xq == '河东':
             areaid = '1016'
         else:
             areaid = '4'
 
-    ld_data = elec.getJzinfo(2, 4)
+    ld_data = elec.getJzinfo(optype=2, arieaid=areaid)
+    # print(ld_data)
     if ld not in ('36', '37', '38'):
         ld_name = '学生公寓' + str(ld) + '栋'
         qs_name = qs
@@ -164,7 +165,7 @@ def electricity_fee_inquiry():
     req = requests.get(url, params=params,
                        timeout=5, headers=elec.HEADERS)
     res = json.loads(req.text)
-    return (xh + '校区 ' + ld + '栋 ' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
+    return (xq + '校区 ' + ld + '栋 ' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
 
 
 @hut.route('/job.ics', methods=['GET', 'POST'])

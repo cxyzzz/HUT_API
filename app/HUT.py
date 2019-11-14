@@ -813,15 +813,26 @@ class ElectricityFeeInquiry(object):
     }
 
     def __init__(self):
-        self.payProId = randint(1, 10000)
+        # self.payProId = randint(1000, 2000)
+        self.payProId = 1000
 
     def get_data(self, params):
-        req = requests.get(self.URL, params=params,
-                           timeout=5, headers=self.HEADERS)
-        res = json.loads(req.text)
+        while(True):
+            try:
+                req = requests.get(self.URL, params=params, timeout=5, headers=self.HEADERS)
+                if(req.status_code == 200):
+                    res = json.loads(req.text)
+                    if(res['roomlist']):
+                        break
+                    else:
+                        self.payProId = randint(1000, 1500)
+                time.sleep(2)
+            except requests.exceptions.ConnectTimeout as err:
+                print(err)
+        print(req.url)
         return res
 
-    def getJzinfo(self, optype=1, arieaid=0, buildid=0, levelid=0):
+    def getJzinfo(self, optype=1, arieaid=4, buildid=0, levelid=0):
         """
             获取编号
             arieaid: 校区 id
@@ -979,9 +990,11 @@ class JobCalendar(object):
 
 
 if __name__ == '__main__':
-    t = Student()
-    ss = t.gen_Kb_web_data(xh='18401100609')
+    # t = Student()
+    # ss = t.gen_Kb_web_data(xh='18401100609')
     # s = t.getUserInfo()
+    t = ElectricityFeeInquiry()
+    s = t.getJzinfo(2, 4)
     # s = CurriculumCalendar()
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
