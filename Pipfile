@@ -14,6 +14,8 @@ beautifulsoup4 = "*"
 gunicorn = "*"
 bootstrap-flask = "*"
 flask-crontab = "*"
+aiohttp = "*"
+asyncio = "*"
 
 [requires]
 python_version = "3.7"

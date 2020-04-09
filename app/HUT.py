@@ -12,6 +12,8 @@ import sys
 import gzip
 import random
 import sqlite3
+import aiohttp
+import asyncio
 import threading
 import traceback
 import time
@@ -79,6 +81,22 @@ UserAgent = (
 )
 
 
+async def async_req(method, url, **kwargs):
+    async with aiohttp.ClientSession() as session:
+        if(method == 'GET'):
+            res = await session.get(url, timeout=kwargs.get('timeout'),
+                                    params=kwargs.get('params'),
+                                    headers=kwargs.get('headers')
+                                    )
+            return await res.json()
+        if(method == 'POST'):
+            res = await session.post(url, timeout=kwargs.get('timeout'),
+                                     data=kwargs.get('data'),
+                                     headers=kwargs.get('headers')
+                                     )
+            return await res.json()
+
+
 class Stu_SqliteDb(object):
     def __init__(self, filename='HUT.db'):
         self.conn = sqlite3.connect(filename)
@@ -143,7 +161,7 @@ class Student(object):
             'xh') if account == -1 else account      # 账号，默认使用全局变量 account
         self.password = os.getenv(
             'pwd') if password == -1 else password   # 密码，默认使用全局变量 password
-        self.session = self.login()
+        self.login()
 
     HEADERS = {
         'User-Agent': random.choice(UserAgent),
@@ -180,27 +198,20 @@ class Student(object):
             'xh': self.account,
             'pwd': self.password
         }
-        session = requests.Session()
-        res = session.post(self.URL, data=datas,
-                           timeout=5, headers=self.HEADERS)
+        res = requests.post(self.URL, data=datas,
+                            timeout=5, headers=self.HEADERS)
         res = res.json()
         if res['success']:
             self.HEADERS['token'] = res['token']
-            return session
         else:
             self.HEADERS['token'] = res['token']
             print(res['msg'])
             # exit(0)
 
     def get_data(self, params):
-        try:
-            res = self.session.get(self.URL, params=params,
-                                   timeout=5, headers=self.HEADERS)
-            # print(res.text)
-            res = res.json()
-        except requests.exceptions.ConnectTimeout:
-            traceback.print_exc()
-            time.sleep(1)
+        loop = asyncio.get_event_loop()
+        res = loop.run_until_complete(
+            async_req('GET', url=self.URL, params=params, headers=self.HEADERS))
         return res
 
     def get_current_time(self):
@@ -469,10 +480,11 @@ class Student(object):
         """
         data = []
         for i in range(1, 31):
-            t = MyThread(self.getKbcxAzc, zc=i, xh=xh)
-            t. start()
-            t.join()
-            res = t.get_result()
+            # t = MyThread(self.getKbcxAzc, zc=i, xh=xh)
+            # t. start()
+            # t.join()
+            # res = t.get_result()
+            res = self.getKbcxAzc(zc=i, xh=xh)
             if res:
                 print('正在获取第 %d 周课表' % i)
                 for j in res:
@@ -553,10 +565,11 @@ class Student(object):
                     data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
                         str(bj).zfill(2) + str(id).zfill(2)
                     if(not self.db.xh_search(data['xh'])):
-                        t = MyThread(self.get_data, data)
-                        t.start()
-                        t.join()
-                        res = t.get_result()
+                        # t = MyThread(self.get_data, data)
+                        # t.start()
+                        # t.join()
+                        # res = t.get_result()
+                        res = self.get_data(data)
                     else:
                         res = 'break'
                     if(res):
@@ -576,10 +589,11 @@ class Student(object):
                             data['xh'] = str(
                                 nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
                             if(not self.db.xh_search(data['xh'])):
-                                t = MyThread(self.get_data, data)
-                                t.start()
-                                t.join()
-                                res = t.get_result()
+                                # t = MyThread(self.get_data, data)
+                                # t.start()
+                                # t.join()
+                                # res = t.get_result()
+                                res = self.get_data(data)
                             else:
                                 res = 'break'
                             if(res):
@@ -602,10 +616,11 @@ class Student(object):
                             data['xh'] = str(
                                 nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
                             if(not self.db.xh_search(data['xh'])):
-                                t = MyThread(self.get_data, data)
-                                t.start()
-                                t.join()
-                                res = t.get_result()
+                                # t = MyThread(self.get_data, data)
+                                # t.start()
+                                # t.join()
+                                # res = t.get_result()
+                                res = self.get_data(data)
                             else:
                                 res = 'break'
                             if(res):
@@ -625,10 +640,12 @@ class Student(object):
                         id = 0
                         data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
                             str(bj).zfill(2) + str(id).zfill(2)
-                        t = MyThread(self.get_data, data)
-                        t.start()
-                        t.join()
-                        res = t.get_result()
+                        # t = MyThread(self.get_data, data)
+                        # t.start()
+                        # t.join()
+                        # res = t.get_result()
+                        res = self.get_data(data)
+
                         # 防止当班级加一后无00编号导致直接跳过此专业
                         if(not res):
                             id += 1
@@ -845,7 +862,8 @@ class ElectricityFeeInquiry(object):
     def get_data(self, params):
         while(True):
             try:
-                req = requests.get(self.URL, params=params, timeout=5, headers=self.HEADERS)
+                req = requests.get(self.URL, params=params,
+                                   timeout=5, headers=self.HEADERS)
                 if(req.status_code == 200):
                     res = json.loads(req.text)
                     if(res['roomlist']):
@@ -904,12 +922,15 @@ class JobCalendar(object):
     }
 
     def __init__(self, school='hngydx', mode='getcareers', m=14, style='simple'):
-        self.HOST = '{school_name}.bibibi.net'.format(school_name=school if(school in self.school_list.keys()) else 'hngydx')
+        self.HOST = '{school_name}.bibibi.net'.format(
+            school_name=school if(school in self.school_list.keys()) else 'hngydx')
         self.HEADERS['Host'] = self.HOST
         self.CAREER_INFO_URL = 'http://' + self.HOST + '/detail/career?id='
-        self.CAREER_INFO_API_URL = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token={TOKEN}&career_id='.format(TOKEN=self.TOKEN)
+        self.CAREER_INFO_API_URL = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token={TOKEN}&career_id='.format(
+            TOKEN=self.TOKEN)
         self.FAIR_INFO_URL = 'http://' + self.HOST + '/detail/jobfair?id='
-        self.FAIR_INFO_API_URL = 'https://student.bibibi.net/index.php?r=chance/ajaxgetjobfairdetail&token={TOKEN}&fair_id='.format(TOKEN=self.TOKEN)
+        self.FAIR_INFO_API_URL = 'https://student.bibibi.net/index.php?r=chance/ajaxgetjobfairdetail&token={TOKEN}&fair_id='.format(
+            TOKEN=self.TOKEN)
 
         self.mode = mode
         self.style = style
@@ -935,12 +956,14 @@ class JobCalendar(object):
                 'professionals' in kwargs.keys()) else ''
             params['career_type'] = kwargs['career_type'] if(
                 'career_type' in kwargs.keys()) else ''
-            self.HEADERS['Referer'] = 'http://{HOST}/module/careers'.format(HOST=self.HOST)
+            self.HEADERS['Referer'] = 'http://{HOST}/module/careers'.format(
+                HOST=self.HOST)
         else:
             params['organisers'] = kwargs['organisers'] if(
                 'organisers' in kwargs.keys()) else ''
             params['type'] = None if(params['type'] == 'inner') else 2
-            self.HEADERS['Referer'] = 'http://{HOST}/module/jobfairs'.format(HOST=self.HOST)
+            self.HEADERS['Referer'] = 'http://{HOST}/module/jobfairs'.format(
+                HOST=self.HOST)
 
         datas = []
         # print(self.dates)
@@ -1097,6 +1120,7 @@ if __name__ == '__main__':
     # t = Student()
     # ss = t.gen_Kb_web_data(xh='18401100609')
     # s = t.getUserInfo()
+    # print(ss)
     # t = ElectricityFeeInquiry()
     # s = t.getJzinfo(2, 4)
     # s = CurriculumCalendar()
