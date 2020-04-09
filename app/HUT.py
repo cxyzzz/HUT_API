@@ -977,13 +977,13 @@ class JobCalendar(object):
                                  params=params, headers=self.HEADERS)
                     t.start()
                     t.join()
+                    time.sleep(0.5)
                     res = t.get_result()
                     # print(res.url)
-                    if(not res or res.status_code != 200):
+                    if(res.status_code != 200):
                         break
                     res = res.json()
                     # print('>' * 50)
-                    # print(res)
                     if(res['data']):
                         for data in res['data']:
                             if(self.mode == 'getcareers' and self.style != 'simple'):
@@ -1002,7 +1002,6 @@ class JobCalendar(object):
                                 company_str = ', '.join(companys)
                                 data['company_name'] = company_str
                             datas.append(data)
-                        # time.sleep(0.5)
                     break
                 except requests.exceptions.ConnectTimeout:
                     traceback.print_exc()
