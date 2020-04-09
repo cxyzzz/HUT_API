@@ -116,7 +116,7 @@ def electricity_fee_inquiry():
         xq = request.form.get('xq')
         ld = request.form.get('ld')
         qs = request.form.get('qs')
-    print('%s-%s-%s' % (xq, ld, qs))
+    print('xq-ld-qs', '%s-%s-%s' % (xq, ld, qs))
     if xq not in ('河东', '河西'):
         return "校区错误，可选值：河东、河西"
     else:
@@ -133,9 +133,9 @@ def electricity_fee_inquiry():
     else:
         ld_name = '学生宿舍' + str(ld) + '栋'
         qs_name = ld + '-' + qs
-    print(ld_name)
+    print('ld_name:', ld_name)
     if ld_data['code'] == 'SUCCESS':
-        print(ld_data['msg'])
+        print("ld_data['msg']", ld_data['msg'])
         # print(ld_data['roomlist'])
         buildid = None
         for room in ld_data['roomlist']:
@@ -148,10 +148,12 @@ def electricity_fee_inquiry():
 
     qs_data = elec.getJzinfo(4, areaid, buildid, -1)
     if qs_data['code'] == 'SUCCESS':
-        print(qs_data['msg'])
+        print('qs_data:', qs_data['msg'])
+        print(qs_data)
         for room in qs_data['roomlist']:
             if qs_name == room['name']:
                 qsid = room['id']
+        return "未找到当前寝室，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
     else:
         return qs_data['msg']
 
@@ -162,9 +164,9 @@ def electricity_fee_inquiry():
         'businesstype': 2,
         'roomverify': qsid
     }
-    req = requests.get(url, params=params,
+    res = requests.get(url, params=params,
                        timeout=5, headers=elec.HEADERS)
-    res = json.loads(req.text)
+    res = res.json()
     return (xq + '校区 ' + ld + '栋 ' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
 
 
@@ -226,7 +228,7 @@ def gen_job_cal():
     job = JobCalendar(mode=mode, style=style)
     data = job.gen_cal(type=type_)
     if(not data):
-        data = "未来１４天内无{mode}".format(mode=mode)
+        return("暂无数据！")
     response = make_response(data)
     response.headers['Content-Type'] = 'text/plain'
     return response
