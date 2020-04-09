@@ -979,7 +979,7 @@ class JobCalendar(object):
                     t.join()
                     res = t.get_result()
                     # print(res.url)
-                    if(res.status_code != 200):
+                    if(not res or res.status_code != 200):
                         break
                     res = res.json()
                     # print('>' * 50)
