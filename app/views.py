@@ -225,6 +225,8 @@ def gen_job_cal():
 
     job = JobCalendar(mode=mode, style=style)
     data = job.gen_cal(type=type_)
+    if(not data):
+        data = "未来１４天内无{mode}".format(mode=mode)
     response = make_response(data)
     response.headers['Content-Type'] = 'text/plain'
     return response

@@ -903,7 +903,7 @@ class JobCalendar(object):
 
     school_list = {'jndx': "暨南大学", 'hndx': "湖南大学", 'xtdx': "湘潭大学",
                    'cslg': "长沙理工大学", 'hngydx': "湖南工业大学", 'nhdx': "南华大学",
-                   'hnkjdx': "湖南科技大学", 'hnnydx': "华南农业大学", 'nfykdx': "南方医科大学",
+                   'hnkjdx': "湖南科技大学", 'hnuc''hnnydx': "华南农业大学", 'nfykdx': "南方医科大学",
                    'nfkjdx': "南方科技大学", 'gdcj': '广东财经大学', 'ccgydx': "长春工业大学",
                    'cczyy': "长春中医药大学", 'cccjxy': "长春财经学院", 'bhdx': "北华大学",
                    'jlcjdx': "吉林财经大学", 'thsfxy': "通化师范学院", 'lndx': "辽宁大学",
@@ -958,7 +958,7 @@ class JobCalendar(object):
                 'career_type' in kwargs.keys()) else ''
             self.HEADERS['Referer'] = 'http://{HOST}/module/careers'.format(
                 HOST=self.HOST)
-        else:
+        elif(self.mode == 'getjobfairs'):
             params['organisers'] = kwargs['organisers'] if(
                 'organisers' in kwargs.keys()) else ''
             params['type'] = None if(params['type'] == 'inner') else 2
@@ -968,7 +968,7 @@ class JobCalendar(object):
         datas = []
         # print(self.dates)
         for date in self.dates:
-            params['day'] = '2020-04-07'
+            params['day'] = date
             while(True):
                 try:
                     # s = self.session.get(
@@ -1017,7 +1017,10 @@ class JobCalendar(object):
         cal.add('VERSION', '2.0')
         cal.add('CALSCALE', 'GREGORIAN')
         # print(self.data)
-        for data in self.get_datas(**kwargs):
+        datas = self.get_datas(**kwargs)
+        if(not datas):
+            return None
+        for data in datas:
             year, mon, day = data['meet_day'].split('-')
             sta_hour, sta_minu = data['meet_time'].split(':')
             event = Event()
@@ -1131,6 +1134,6 @@ if __name__ == '__main__':
     # t = ExaminationCalendar()
     # s = t.gen_cal()
     # print(t.get_datas())
-    t = JobCalendar(style='full')
+    t = JobCalendar(style='full', mode='getjobfairs')
     s = t.get_datas()
     pass
