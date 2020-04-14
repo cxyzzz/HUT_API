@@ -186,5 +186,5 @@ def school_feed():
     else:
         directory = os.getcwd()
         response = make_response(send_from_directory(
-            directory, 'feed.xml', as_attachment=True))
+            directory, 'feed.xml', mimetype='application/xml'))
         return response
