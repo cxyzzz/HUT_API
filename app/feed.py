@@ -28,7 +28,7 @@ class SchoolFeed(object):
             self.name = "校内新闻"
         else:
             self.name = "通知公告"
-
+        # print(self.type_, type_, self.name)
         self.customerId = customerId
         self.session = requests.session()
 
@@ -237,7 +237,7 @@ class SchoolFeed(object):
             self._item.appendChild(
                 _create_cdata_element(self._document, type_='content:encoded', text=content))
 
-        with open('feed.xml', 'w') as f:
+        with open(self.name + '_feed.xml', 'w') as f:
             self._document.writexml(f)
 
         return self._document.toxml()

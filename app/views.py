@@ -157,7 +157,7 @@ def gen_job_cal():
 
 @hut.route('/feed', methods=['GET'])
 def school_feed():
-    type_ = request.args.get('type')
+    type_ = int(request.args.get('type'))
     customerId = request.args.get('customerId')
 
     if (type_ not in (2, 3)):
@@ -166,8 +166,14 @@ def school_feed():
     if (customerId not in range(784, 869)):
         customerId = 786
 
+    if (type_ == 2):
+        name = "校内新闻"
+    else:
+        name = "通知公告"
+    file_name = name + '_feed.xml'
+
     try:
-        file_timstamp = os.path.getmtime('feed.xml')
+        file_timstamp = os.path.getmtime(file_name)
         file_timeinfo = datetime.fromtimestamp(file_timstamp)
     except FileNotFoundError:
         school = SchoolFeed(type_=type_, customerId=customerId)
@@ -186,6 +192,6 @@ def school_feed():
     else:
         directory = os.getcwd()
         response = make_response(send_from_directory(
-            directory, 'feed.xml', mimetype='application/xml'))
+            directory, file_name, mimetype='application/xml'))
         response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
         return response
