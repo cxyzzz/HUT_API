@@ -895,6 +895,60 @@ class ElectricityFeeInquiry(object):
         res = self.get_data(params)
         return res
 
+    def query(self, xq, ld, qs):
+        print('xq-ld-qs', '%s-%s-%s' % (xq, ld, qs))
+        if xq not in ('河东', '河西'):
+            return "校区错误，可选值：河东、河西"
+        else:
+            if xq == '河东':
+                areaid = '1016'
+            else:
+                areaid = '4'
+
+        ld_data = self.getJzinfo(optype=2, arieaid=areaid)
+        # print(ld_data)
+        if ld not in ('36', '37', '38'):
+            ld_name = '学生公寓' + str(ld) + '栋'
+            qs_name = qs
+        else:
+            ld_name = '学生宿舍' + str(ld) + '栋'
+            qs_name = ld + '-' + qs
+        print('ld_name:', ld_name)
+        if ld_data['code'] == 'SUCCESS':
+            print("ld_data['msg']", ld_data['msg'])
+            # print(ld_data['roomlist'])
+            buildid = None
+            for room in ld_data['roomlist']:
+                if ld_name == room['name']:
+                    buildid = room['id']
+            if not buildid:
+                return "未找到当前楼栋，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
+        else:
+            return ld_data['msg']
+
+        qs_data = self.getJzinfo(4, areaid, buildid, -1)
+        if qs_data['code'] == 'SUCCESS':
+            print('qs_data:', qs_data['msg'])
+            print(qs_data)
+            for room in qs_data['roomlist']:
+                if qs_name == room['name']:
+                    qsid = room['id']
+            return "未找到当前寝室，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
+        else:
+            return qs_data['msg']
+
+        url = 'http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoomState.do'
+        params = {
+            'payProId': self.payProId,
+            'schoolcode': 786,
+            'businesstype': 2,
+            'roomverify': qsid
+        }
+        res = requests.get(url, params=params,
+                           timeout=5, headers=self.HEADERS)
+        res = res.json()
+        return (xq + '校区 ' + ld + '栋 ' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
+
 
 class JobCalendar(object):
     '''
@@ -986,11 +1040,12 @@ class JobCalendar(object):
                     # print('>' * 50)
                     if(res['data']):
                         for data in res['data']:
-                            if(self.mode == 'getcareers' and self.style != 'simple'):
+                            if(self.mode == 'getcareers'):
                                 career_res = self.session.get(
                                     self.CAREER_INFO_API_URL + data['career_talk_id'])
                                 career_res = career_res.json()
-                                data['remark'] = career_res['data']['remark']
+                                if(self.style == 'full'):
+                                    data['remark'] = career_res['data']['remark']
                             else:
                                 fair_res = self.session.get(
                                     self.FAIR_INFO_API_URL + data['fair_id'])
@@ -1038,7 +1093,7 @@ class JobCalendar(object):
                     data['city_name'], data['view_count'],
                     data['company_property'], data['industry_category'],
                     data['professionals'],
-                    self.CAREER_INFO_HOST + data['career_talk_id'])
+                    self.CAREER_INFO_URL + data['career_talk_id'])
                 if(self.style == 'full'):
                     description += '\n{remark}'.format(remark=data['remark'])
                 event.add('DESCRIPTION', description)
@@ -1047,7 +1102,7 @@ class JobCalendar(object):
                 event.add('DESCRIPTION', '%s %s %s\n点击统计：%s\n组织者：%s\n参会企业：%s\n%s' %
                           (data['meet_day'], data['meet_time'], data['address'],
                            data['view_count'], data['organisers'], data['company_name'],
-                           self.FAIR_INFO_HOST + data['fair_id']))
+                           self.FAIR_INFO_URL + data['fair_id']))
 
             cal.add_component(event)
         # s = str(cal.to_ical(), encoding='utf8')

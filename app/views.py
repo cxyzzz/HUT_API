@@ -1,6 +1,5 @@
 import os
-import requests
-import json
+from app.feed import SchoolFeed
 from datetime import timedelta
 from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
@@ -53,7 +52,7 @@ def login():
         return redirect(url_for('hut.login'))
 
 
-@hut.route('/')
+@hut.route('/', methods=['GET'])
 def index():
     if (session.get('account') and session.get('password')):
         account = session['account']
@@ -76,7 +75,7 @@ def index():
         return redirect(url_for('hut.login'))
 
 
-@hut.route('/gen_cal')
+@hut.route('/gen_cal', methods=['GET'])
 def gen_cur_cal():
     if session.get('data'):
         account = session['account']
@@ -116,119 +115,59 @@ def electricity_fee_inquiry():
         xq = request.form.get('xq')
         ld = request.form.get('ld')
         qs = request.form.get('qs')
-    print('xq-ld-qs', '%s-%s-%s' % (xq, ld, qs))
-    if xq not in ('河东', '河西'):
-        return "校区错误，可选值：河东、河西"
-    else:
-        if xq == '河东':
-            areaid = '1016'
-        else:
-            areaid = '4'
-
-    ld_data = elec.getJzinfo(optype=2, arieaid=areaid)
-    # print(ld_data)
-    if ld not in ('36', '37', '38'):
-        ld_name = '学生公寓' + str(ld) + '栋'
-        qs_name = qs
-    else:
-        ld_name = '学生宿舍' + str(ld) + '栋'
-        qs_name = ld + '-' + qs
-    print('ld_name:', ld_name)
-    if ld_data['code'] == 'SUCCESS':
-        print("ld_data['msg']", ld_data['msg'])
-        # print(ld_data['roomlist'])
-        buildid = None
-        for room in ld_data['roomlist']:
-            if ld_name == room['name']:
-                buildid = room['id']
-        if not buildid:
-            return "未找到当前楼栋，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
-    else:
-        return ld_data['msg']
-
-    qs_data = elec.getJzinfo(4, areaid, buildid, -1)
-    if qs_data['code'] == 'SUCCESS':
-        print('qs_data:', qs_data['msg'])
-        print(qs_data)
-        for room in qs_data['roomlist']:
-            if qs_name == room['name']:
-                qsid = room['id']
-        return "未找到当前寝室，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
-    else:
-        return qs_data['msg']
-
-    url = 'http://h5cloud.17wanxiao.com:8080/CloudPayment/user/getRoomState.do'
-    params = {
-        'payProId': elec.payProId,
-        'schoolcode': 786,
-        'businesstype': 2,
-        'roomverify': qsid
-    }
-    res = requests.get(url, params=params,
-                       timeout=5, headers=elec.HEADERS)
-    res = res.json()
-    return (xq + '校区 ' + ld + '栋 ' + res['description'] + ' ' + '剩余电量：' + res['quantity'] + res['quantityunit'])
+    return elec.query(xq=xq, ld=ld, qs=qs)
 
 
-@hut.route('/job.ics', methods=['GET', 'POST'])
+@hut.route('/job.ics', methods=['GET'])
 def gen_job_cal():
-    if request.method == 'GET':
-        mode = request.args.get('mode')
-        if(mode == '宣讲会'):
-            mode = 'getcareers'
-        elif(mode == '双选会'):
-            mode = 'getjobfairs'
-        elif(mode):
-            return("mode 值错误，可选值：'宣讲会'，'双选会'")
-        else:
-            mode = 'getcareers'
-
-        type_ = request.args.get('type')
-        if(type_ == '校内'):
-            type_ = 'inner'
-        elif(type_ == '校外'):
-            type_ = 'outer'
-        elif(type_):
-            return("type 值错误，可选值：'校内'，'校外'")
-        else:
-            type_ = 'inner'
-
-        style = request.args.get('style')
-        if(style and style not in ('simple', 'full')):
-            return("style 值错误")
-        else:
-            style = 'simple'
+    mode = request.args.get('mode')
+    if(mode == '宣讲会'):
+        mode = 'getcareers'
+    elif(mode == '双选会'):
+        mode = 'getjobfairs'
+    elif(mode):
+        return("mode 值错误，可选值：'宣讲会'，'双选会'")
     else:
-        mode = request.form.get('mode')
-        if(mode == '宣讲会'):
-            mode = 'getcareers'
-        elif(mode == '双选会'):
-            mode = 'getjobfairs'
-        elif(mode):
-            return("mode 值错误，可选值：'宣讲会'，'双选会'")
-        else:
-            mode = 'getcareers'
+        mode = 'getcareers'
 
-        type_ = request.form.get('type')
-        if(type_ == '校内'):
-            type_ = 'inner'
-        elif(type_ == '校外'):
-            type_ = 'outer'
-        elif(type_):
-            return("tp 值错误，可选值：'校内'，'校外'")
-        else:
-            type_ = 'inner'
+    type_ = request.args.get('type')
+    if(type_ == '校内'):
+        type_ = 'inner'
+    elif(type_ == '校外'):
+        type_ = 'outer'
+    elif(type_):
+        return("type 值错误，可选值：'校内'，'校外'")
+    else:
+        type_ = 'inner'
 
-        style = request.form.get('style')
-        if(style and style not in ('simple', 'full')):
-            return("style 值错误")
-        else:
-            style = 'simple'
+    style = request.args.get('style')
+    if(style and style not in ('simple', 'full')):
+        return("style 值错误")
+    else:
+        style = 'simple'
 
     job = JobCalendar(mode=mode, style=style)
     data = job.gen_cal(type=type_)
     if(not data):
         return("暂无数据！")
     response = make_response(data)
-    response.headers['Content-Type'] = 'text/plain'
+    response.headers["Content-Disposition"] = "attachment; filename=job_calendar.ics"
+    return response
+
+
+@hut.route('/feed', methods=['GET'])
+def school_feed():
+    type_ = request.args.get('type')
+    customerId = request.args.get('customerId')
+
+    if (type_ not in (2, 3)):
+        type_ = 3
+
+    if (customerId not in range(784, 869)):
+        customerId = 786
+
+    school = SchoolFeed(type_=type_, customerId=customerId)
+    rss = school.gen_feed()
+    response = make_response(rss)
+    response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
     return response
