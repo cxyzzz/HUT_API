@@ -157,7 +157,9 @@ def gen_job_cal():
 
 @hut.route('/feed', methods=['GET'])
 def school_feed():
-    type_ = int(request.args.get('type'))
+    type_ = request.args.get('type')
+    if(type_):
+        type_ = int(type_)
     customerId = request.args.get('customerId')
 
     if (type_ not in (2, 3)):
