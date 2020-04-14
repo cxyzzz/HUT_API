@@ -187,4 +187,5 @@ def school_feed():
         directory = os.getcwd()
         response = make_response(send_from_directory(
             directory, 'feed.xml', mimetype='application/xml'))
+        response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
         return response
