@@ -237,9 +237,10 @@ class SchoolFeed(object):
             self._item.appendChild(
                 _create_cdata_element(self._document, type_='content:encoded', text=content))
 
+        with open('feed.xml', 'w') as f:
+            self._document.writexml(f)
+
         return self._document.toxml()
-        # with open('t.xml', 'w') as f:
-        #     self._document.writexml(f)
 
 
 if __name__ == "__main__":

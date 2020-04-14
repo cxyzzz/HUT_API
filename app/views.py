@@ -1,6 +1,6 @@
 import os
 from app.feed import SchoolFeed
-from datetime import timedelta
+from datetime import timedelta, datetime
 from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
 from flask_wtf import FlaskForm
@@ -166,8 +166,25 @@ def school_feed():
     if (customerId not in range(784, 869)):
         customerId = 786
 
-    school = SchoolFeed(type_=type_, customerId=customerId)
-    rss = school.gen_feed()
-    response = make_response(rss)
-    response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
-    return response
+    try:
+        file_timstamp = os.path.getmtime('feed.xml')
+        file_timeinfo = datetime.fromtimestamp(file_timstamp)
+    except FileNotFoundError:
+        school = SchoolFeed(type_=type_, customerId=customerId)
+        rss = school.gen_feed()
+        response = make_response(rss)
+        response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
+        return response
+
+    now_hour = datetime.now().hour
+    if (now_hour - file_timeinfo >= 1):
+        school = SchoolFeed(type_=type_, customerId=customerId)
+        rss = school.gen_feed()
+        response = make_response(rss)
+        response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
+        return response
+    else:
+        directory = os.getcwd()
+        response = make_response(send_from_directory(
+            directory, 'feed.xml', as_attachment=True))
+        return response
