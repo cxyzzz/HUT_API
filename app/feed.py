@@ -54,7 +54,7 @@ class SchoolFeed(object):
         data = {
             'customerId': self.customerId,  # 学校 ID,{784,869}
             'type': type_ if type_ else self.type_,  # {0,1} 学校简介,2 校内新闻,3 通知公告
-            'pageSize': 1,  # 一页包含的条数
+            'pageSize': 1,  # 一页包含的数据条数
             'currPage': 1   # 当前页
         }
         response = self.session.post(url, headers=headers, data=data)

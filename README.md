@@ -709,3 +709,45 @@ count: 同宣讲会
 ### 效果图
 
 ![IMG_20191023_220926.jpg](https://i.loli.net/2019/10/23/YEznJiaecbr4PTV.jpg)
+
+## 校内新闻和通知公告（来源：完美校园支付宝小程序）
+
+### API接口
+
+校内新闻和通知公告为同一接口不同请求参数
+
+[请求地址](#请求地址) | [响应格式](#响应格式) | [HTTP 请求方式](#http-请求方式) | [是否需要授权](#是否需要授权) | [请求参数](#请求参数) | [响应结果](#响应结果) | [响应参数说明](#响应参数说明)
+
+#### 请求地址
+
+<https://www.17wanxiao.com/campus/campus/schoolinfo/load.action>
+
+#### 响应格式
+
+JSON
+
+#### HTTP 请求方式
+
+POST
+
+#### 是否需要授权
+
+否
+
+#### 请求参数
+
+| 参数名 | 必须 | 类型及范围 | 说明 |
+|:----:|:----:|:----:|:----|
+|customerId|是|string 或 int,[784,869]|学校 ID|
+|type|是|string 或 int,[0,2]|请求数据类型，[0,1] 学校简介,2 校内新闻,3 通知公告|
+|pageSize|是|int|一页包含的数据条数|
+|currPage|是|int|当前页|
+
+#### 响应结果
+
+|参数名|类型及范围|说明|
+|:----:|:----:|:----:|
+|totalCount|int|总计页数|
+|beginIndex|int|开始索引地址|
+|pageSize|int|包含的数据条数|
+|results|list|具体内容：{'contentImages': '[]', 'createTime': '创建时间', 'creator': '创建者', 'customerId': 学校 ID, 'enabled': True, 'firstImgUrl': '', 'id': (int)文章 id, 'noticeFlag': True, 'summary': '简介', 'title': '标题', 'type': 请求数据类型}|
