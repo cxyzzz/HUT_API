@@ -177,7 +177,7 @@ def school_feed():
         return response
 
     now_hour = datetime.now().hour
-    if (now_hour - file_timeinfo >= 1):
+    if (now_hour - file_timeinfo.hour >= 1):
         school = SchoolFeed(type_=type_, customerId=customerId)
         rss = school.gen_feed()
         response = make_response(rss)
