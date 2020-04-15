@@ -138,23 +138,6 @@ class Stu_SqliteDb(object):
         return self.cur.fetchall()
 
 
-class MyThread(threading.Thread):
-    def __init__(self, func, *args, **kwargs):
-        super(MyThread, self).__init__()
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
-
-    def run(self):
-        self.result = self.func(*self.args, **self.kwargs)
-
-    def get_result(self):
-        try:
-            return self.result
-        except Exception:
-            return None
-
-
 class Student(object):
     def __init__(self, account=-1, password=-1):
         self.account = os.getenv(
@@ -480,10 +463,6 @@ class Student(object):
         """
         data = []
         for i in range(1, 31):
-            # t = MyThread(self.getKbcxAzc, zc=i, xh=xh)
-            # t. start()
-            # t.join()
-            # res = t.get_result()
             res = self.getKbcxAzc(zc=i, xh=xh)
             if res:
                 print('正在获取第 %d 周课表' % i)
@@ -565,10 +544,6 @@ class Student(object):
                     data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
                         str(bj).zfill(2) + str(id).zfill(2)
                     if(not self.db.xh_search(data['xh'])):
-                        # t = MyThread(self.get_data, data)
-                        # t.start()
-                        # t.join()
-                        # res = t.get_result()
                         res = self.get_data(data)
                     else:
                         res = 'break'
@@ -589,10 +564,6 @@ class Student(object):
                             data['xh'] = str(
                                 nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
                             if(not self.db.xh_search(data['xh'])):
-                                # t = MyThread(self.get_data, data)
-                                # t.start()
-                                # t.join()
-                                # res = t.get_result()
                                 res = self.get_data(data)
                             else:
                                 res = 'break'
@@ -616,10 +587,6 @@ class Student(object):
                             data['xh'] = str(
                                 nj) + xy_zy[0] + xy_zy[1] + str(bj).zfill(2) + str(id).zfill(2)
                             if(not self.db.xh_search(data['xh'])):
-                                # t = MyThread(self.get_data, data)
-                                # t.start()
-                                # t.join()
-                                # res = t.get_result()
                                 res = self.get_data(data)
                             else:
                                 res = 'break'
@@ -640,10 +607,6 @@ class Student(object):
                         id = 0
                         data['xh'] = str(nj) + xy_zy[0] + xy_zy[1] + \
                             str(bj).zfill(2) + str(id).zfill(2)
-                        # t = MyThread(self.get_data, data)
-                        # t.start()
-                        # t.join()
-                        # res = t.get_result()
                         res = self.get_data(data)
 
                         # 防止当班级加一后无00编号导致直接跳过此专业
@@ -955,7 +918,7 @@ class JobCalendar(object):
         学校列表：http://bibibi.net/tour/admin/tag/hzgx.htm
     '''
 
-    school_list = {'jndx': "暨南大学", 'hndx': "湖南大学", 'xtdx': "湘潭大学",
+    SCHOOL_LIST = {'jndx': "暨南大学", 'hndx': "湖南大学", 'xtdx': "湘潭大学",
                    'cslg': "长沙理工大学", 'hngydx': "湖南工业大学", 'nhdx': "南华大学",
                    'hnkjdx': "湖南科技大学", 'hnuc''hnnydx': "华南农业大学", 'nfykdx': "南方医科大学",
                    'nfkjdx': "南方科技大学", 'gdcj': '广东财经大学', 'ccgydx': "长春工业大学",
@@ -972,23 +935,52 @@ class JobCalendar(object):
 
     HEADERS = {
         'Host': 'bibibi.net',
-        'User-Agent': random.choice(UserAgent)
+        'User-Agent': random.choice(UserAgent),
+        'X-Requested-With': 'XMLHttpRequest'
     }
 
-    def __init__(self, school='hngydx', mode='getcareers', m=14, style='simple'):
-        self.HOST = '{school_name}.bibibi.net'.format(
-            school_name=school if(school in self.school_list.keys()) else 'hngydx')
+    INFO_HEADERS = {
+        'Host': 'student.bibibi.net',
+        'Origin': 'http://static.bibibi.net',
+        'User-Agent': HEADERS['User-Agent']
+    }
+
+    def __init__(self, **kwargs):
+        """
+            :school option 所请求的学校，目前已知可选值见 JobCalendar.SCHOOL_LIST default['hngydx']
+            :m option 生成从当前日期开始到 m 天后的数据 default[14]
+            :style option 生成日历数据是否包含公司简介（ HTML 格式，需要日历软件支持，比如：谷歌日历） default['simple']
+            :mode option 请求数据类型，可选值：
+                宣讲会：'getcareers',需求参数见 get_datas 函数注释
+                双选会：'getjobfairs',需求参数见 get_datas 函数注释
+                在线招聘：'getonlines',需求参数见 get_datas 函数注释
+                岗位招聘：'getjobs'，需求参数见 get_datas 函数注释
+                default['getcareers']
+
+        """
+        m = kwargs.get('m') if kwargs.get('m') else 14
+
+        self.school = kwargs.get('school') if(
+            kwargs.get('school') in self.SCHOOL_LIST.keys()) else 'hngydx'
+        self.mode = kwargs.get('mode') if kwargs.get('mode') else 'getcareers'
+        self.style = kwargs.get('style') if kwargs.get('style') else 'simple'
+
+        self.HOST = '{school_name}.bibibi.net'.format(school_name=self.school)
         self.HEADERS['Host'] = self.HOST
+        self.URL = 'http://' + self.HOST + '/module/' + self.mode
+
         self.CAREER_INFO_URL = 'http://' + self.HOST + '/detail/career?id='
         self.CAREER_INFO_API_URL = 'http://student.bibibi.net/index.php?r=career/ajaxgetcareerdetail&token={TOKEN}&career_id='.format(
             TOKEN=self.TOKEN)
         self.FAIR_INFO_URL = 'http://' + self.HOST + '/detail/jobfair?id='
-        self.FAIR_INFO_API_URL = 'https://student.bibibi.net/index.php?r=chance/ajaxgetjobfairdetail&token={TOKEN}&fair_id='.format(
+        self.FAIR_INFO_API_URL = 'http://student.bibibi.net/index.php?r=chance/ajaxgetjobfairdetail&token={TOKEN}&fair_id='.format(
             TOKEN=self.TOKEN)
-
-        self.mode = mode
-        self.style = style
-        self.url = 'http://' + self.HOST + '/module/' + mode
+        self.ONLINE_URL = 'http://' + self.HOST + '/online?id='
+        self.ONLINE_INFO_URL = 'http://student.bibibi.net/index.php?r=online_recruitment/ajaxgetrecruitment&type=&token={TOKEN}&recruitment_id='.format(
+            TOKEN=self.TOKEN)
+        self.JOB_URL = 'http://' + self.HOST + '/job?id='
+        self.JOB_INFO_URL = 'http://student.bibibi.net/index.php?r=job/ajaxgetjobdetail&token={TOKEN}&publish_id='.format(
+            TOKEN=self.TOKEN)
 
         self.dates = []
         for i in range(m):
@@ -998,9 +990,38 @@ class JobCalendar(object):
         self.session = requests.Session()
 
     def get_datas(self, **kwargs):
+        """
+            :start need 起始点，即从第几个开始显示 default[0]
+            :count need 从 start 开始，显示 count 个数据 default[200]
+            :keyword option 岗位关键字，空为所有(也可使用 keyword 关键字) default['']
+            :address option 召开地点 default['']
+            :type getcareers/getjobfairs need 范围，可选值：{校内：inner，校外：outer, ''} default[''/'inner']
+
+            mode:
+                getcareers:
+                    :day need 所要查询日期，eg:2019-10-23,空为当前日期
+                    :professionals option 需求专业 default['']
+                    :career_type option 类型，可选值：['', '校招', '实习', '包含实习'] default['']
+
+                getjobfairs:
+                    :organisers option 组织者 default['']
+                    :day option 日期，可选值：['', '校招', '实习', '包含实习'] default['']
+
+                getonlines:
+                    :professionals option 需求专业 default['']
+                    :recruit_type option 招聘类别，可选值：['', '正式招聘', '实习招聘'] default['']
+
+                getjobs:
+                    :company_name option 企业名称 default['']
+                    :city_name option 工作地点 default['']
+                    :about_major option 相关专业 default['']
+                    :degree_require option 学历要求，可选值：['', '大专及以上', '本科及以上', '硕士及以上', '博士及以上'] default['']
+                    :is_practice option 是否为实习岗，可选值：[0, 1] default[0]
+                    :type_id option 未知
+        """
         params = {
             'start': kwargs['start'] if('start' in kwargs.keys()) else 0,
-            'count': kwargs['count'] if('count' in kwargs.keys()) else 100,
+            'count': kwargs['count'] if('count' in kwargs.keys()) else 200,
             'keyword': kwargs['keyword'] if('keyword' in kwargs.keys()) else '',
             'address': kwargs['address'] if('address' in kwargs.keys()) else '',
             'type': kwargs['type'] if('type' in kwargs.keys()) else 'inner'
@@ -1015,52 +1036,71 @@ class JobCalendar(object):
         elif(self.mode == 'getjobfairs'):
             params['organisers'] = kwargs['organisers'] if(
                 'organisers' in kwargs.keys()) else ''
-            params['type'] = None if(params['type'] == 'inner') else 2
             self.HEADERS['Referer'] = 'http://{HOST}/module/jobfairs'.format(
                 HOST=self.HOST)
+        elif (self.mode == 'getonlines'):
+            params['professionals'] = kwargs['professionals'] if(
+                'professionals' in kwargs.keys()) else ''
+            params['recruit_type'] = kwargs['recruit_type'] if (
+                'recruit_type' in kwargs.keys()) else ''
+            self.HEADERS['Referer'] = 'http://{HOST}/module/onlines'.format(
+                HOST=self.HOST)
+        elif (self.mode == 'getjobs'):
+            params['company_name'] = kwargs['company_name'] if(
+                'company_name' in kwargs.keys()) else ''
+            params['city_name'] = kwargs['city_name'] if(
+                'city_name' in kwargs.keys()) else ''
+            params['about_major'] = kwargs['about_major'] if(
+                'about_major' in kwargs.keys()) else ''
+            params['degree_require'] = kwargs['degree_require'] if(
+                'degree_require' in kwargs.keys()) else ''
+            params['type_id'] = kwargs['type_id'] if(
+                'type_id' in kwargs.keys()) else -1
+            params['is_practice'] = kwargs['is_practice'] if(
+                'is_practice' in kwargs.keys()) else 1
 
         datas = []
-        # print(self.dates)
         for date in self.dates:
             params['day'] = date
-            while(True):
-                try:
-                    # s = self.session.get(
-                    #     self.url, params=params, headers=self.HEADERS)
-                    t = MyThread(self.session.get, self.url,
-                                 params=params, headers=self.HEADERS)
-                    t.start()
-                    t.join()
-                    time.sleep(0.5)
-                    res = t.get_result()
-                    # print(res.url)
-                    if(res.status_code != 200):
-                        break
-                    res = res.json()
-                    # print('>' * 50)
-                    if(res['data']):
-                        for data in res['data']:
-                            if(self.mode == 'getcareers'):
+            res = self.session.get(
+                self.URL, params=params, headers=self.HEADERS)
+            self.INFO_HEADERS['Referer'] = res.url
+            if(res.status_code == 200):
+                res = res.json()
+                if(res['data']):
+                    for data in res['data']:
+                        if(self.mode == 'getcareers'):
+                            if(self.style == 'full'):
                                 career_res = self.session.get(
-                                    self.CAREER_INFO_API_URL + data['career_talk_id'])
+                                    self.CAREER_INFO_API_URL + data['career_talk_id'], headers=self.INFO_HEADERS)
                                 career_res = career_res.json()
-                                if(self.style == 'full'):
-                                    data['remark'] = career_res['data']['remark']
-                            else:
-                                fair_res = self.session.get(
-                                    self.FAIR_INFO_API_URL + data['fair_id'])
-                                fair_res = res.json()
-                                companys = []
-                                for job in fair_res['data']['job_list']:
-                                    if(job['company_name'] not in companys):
-                                        companys.append(job['company_name'])
-                                company_str = ', '.join(companys)
-                                data['company_name'] = company_str
-                            datas.append(data)
-                    break
-                except requests.exceptions.ConnectTimeout:
-                    traceback.print_exc()
-                    time.sleep(1)
+                                data['content'] = career_res['data']['remark']
+                        elif(self.mode == 'getjobfairs'):
+                            fair_res = self.session.get(
+                                self.FAIR_INFO_API_URL + data['fair_id'], headers=self.INFO_HEADERS)
+                            fair_res = fair_res.json()
+                            companys = []
+                            for job in fair_res['data']['job_list']:
+                                if(job['company_name'] not in companys):
+                                    companys.append(
+                                        job['company_name'])
+                            company_str = ', '.join(companys)
+                            data['company_name'] = company_str
+                        elif (self.mode == 'getonlines'):
+                            if(self.style == 'full'):
+                                online_res = self.session.get(
+                                    self.ONLINE_INFO_URL + data['recruitment_id'], headers=self.INFO_HEADERS)
+                                online_res = online_res.json()
+                                data['content'] = online_res['data']['content']
+                        elif(self.mode == 'getjobs'):
+                            if(self.style == 'full'):
+                                job_res = self.session.get(
+                                    self.JOB_INFO_URL + data['publish_id'], headers=self.INFO_HEADERS)
+                                job_res = job_res.json()
+                                data['content'] = job_res['data']['job_require'] + '\n' + job_res['data']['company']['introduction']
+                        datas.append(data)
+                    if(self.mode in ('getonlines', 'getjobs')):
+                        break
         return datas
 
     def gen_cal(self, **kwargs):
@@ -1095,9 +1135,9 @@ class JobCalendar(object):
                     data['professionals'],
                     self.CAREER_INFO_URL + data['career_talk_id'])
                 if(self.style == 'full'):
-                    description += '\n{remark}'.format(remark=data['remark'])
+                    description += '\n{content}'.format(content=data['content'])
                 event.add('DESCRIPTION', description)
-            else:
+            elif(self.mode == 'getjobfairs'):
                 event.add('SUMMARY', data['title'])
                 event.add('DESCRIPTION', '%s %s %s\n点击统计：%s\n组织者：%s\n参会企业：%s\n%s' %
                           (data['meet_day'], data['meet_time'], data['address'],
@@ -1160,7 +1200,6 @@ class Pwd(object):
                     print('密码错误: ', pwd)
                 break
             except requests.exceptions.ConnectTimeout:
-                traceback.print_exc()
                 time.sleep(2)
         # print(time.ctime(time.time()))
 
@@ -1188,6 +1227,9 @@ if __name__ == '__main__':
     # t = ExaminationCalendar()
     # s = t.gen_cal()
     # print(t.get_datas())
-    t = JobCalendar(style='full', mode='getjobfairs')
-    s = t.get_datas()
+    start = time.time()
+    t = JobCalendar(style='full', mode='getonlines')
+    s = t.gen_cal()
+    end = time.time()
+    print(end - start)
     pass

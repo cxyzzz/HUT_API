@@ -120,38 +120,36 @@ def electricity_fee_inquiry():
 
 @hut.route('/job.ics', methods=['GET'])
 def gen_job_cal():
-    mode = request.args.get('mode')
-    if(mode == '宣讲会'):
-        mode = 'getcareers'
-    elif(mode == '双选会'):
-        mode = 'getjobfairs'
-    elif(mode):
-        return("mode 值错误，可选值：'宣讲会'，'双选会'")
-    else:
-        mode = 'getcareers'
+    """
+        :args school mode, style, type
+    """
 
-    type_ = request.args.get('type')
-    if(type_ == '校内'):
-        type_ = 'inner'
-    elif(type_ == '校外'):
-        type_ = 'outer'
-    elif(type_):
-        return("type 值错误，可选值：'校内'，'校外'")
-    else:
-        type_ = 'inner'
+    kwargs = request.args
 
-    style = request.args.get('style')
+    school = kwargs.get('school')
+    if (school and school not in JobCalendar.SCHOOL_LIST.keys()):
+        return ("school 值错误，目前可选值：（如果确定你的学校使用的是一样的系统而列表里没有欢迎提交给我进行适配）\n{school_list}".format(JobCalendar.SCHOOL_LIST))
+
+    mode = kwargs.get('mode')
+    mode_tuple = ('getcareers', 'getjobfairs')
+    if(mode and mode not in mode_tuple):
+        return("mode 值错误，可选值：'getcareers', 'getjobfairs'")
+
+    type_ = kwargs.get('type')
+    if(mode in ('getcareers', 'getjobfairs')):
+        if(type_ and type_ not in ('inner', 'outer')):
+            return("type 值错误，可选值：'inner', 'outer'")
+
+    style = kwargs.get('style')
     if(style and style not in ('simple', 'full')):
-        return("style 值错误")
-    else:
-        style = 'simple'
+        return("style 值错误，可选值：'simple', 'full'")
 
-    job = JobCalendar(mode=mode, style=style)
-    data = job.gen_cal(type=type_)
+    job = JobCalendar(**kwargs)
+    data = job.gen_cal(**kwargs)
     if(not data):
         return("暂无数据！")
     response = make_response(data)
-    response.headers["Content-Disposition"] = "attachment; filename=job_calendar.ics"
+    # response.headers["Content-Disposition"] = "attachment; filename=job_calendar.ics"
     return response
 
 
