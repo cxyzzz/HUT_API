@@ -125,32 +125,52 @@ def gen_job_cal():
     """
 
     kwargs = request.args.to_dict()
-    school = kwargs.get('school')
+    school = kwargs.get('school', 'hngydx')
     if (school and school not in JobCalendar.SCHOOL_LIST.keys()):
         return ("school 值错误，默认：hngydx，目前可选值：（如果确定你的学校使用的是一样的系统而列表里没有欢迎提交给我进行适配）\n{school_list}".format(JobCalendar.SCHOOL_LIST))
 
-    mode = kwargs.get('mode')
+    mode = kwargs.get('mode', 'getcareers')
     mode_tuple = ('getcareers, getjobfairs')
     if(mode and mode not in mode_tuple):
         return("mode 值错误，可选值：getcareers(默认), getjobfairs")
 
-    type_ = kwargs.get('type')
+    type_ = kwargs.get('type', 'inner')
     if(mode in ('getcareers, getjobfairs')):
         if(type_ and type_ not in ('inner', 'outer')):
             return("type 值错误，可选值：inner(默认), outer")
 
-    style = kwargs.get('style')
+    style = kwargs.get('style', 'simple')
     if(style and style not in ('simple', 'full')):
         return("style 值错误，可选值：simple(默认), full")
 
-    # print(str(kwargs))
-    job = JobCalendar(**kwargs)
-    data = job.gen_cal(**kwargs)
-    if(not data):
-        return("暂无数据！")
-    response = make_response(data)
-    # response.headers["Content-Disposition"] = "attachment; filename=job_calendar.ics"
-    return response
+    file_name = '{0}_{1}_jb.ics'.format(school, mode)
+    # return(file_name)
+    try:
+        file_timstamp = os.path.getmtime(file_name)
+        file_timeinfo = datetime.fromtimestamp(file_timstamp)
+    except FileNotFoundError:
+        job = JobCalendar(**kwargs)
+        data = job.gen_cal(**kwargs)
+        if(not data):
+            return("暂无数据！")
+        response = make_response(data)
+        # response.headers["Content-Disposition"] = "attachment; filename=job_calendar.ics"
+        return response
+    now_hour = datetime.now().hour
+    if (now_hour - file_timeinfo.hour >= 1):
+        job = JobCalendar(**kwargs)
+        data = job.gen_cal(**kwargs)
+        if(not data):
+            return("暂无数据！")
+        response = make_response(data)
+        # response.headers["Content-Disposition"] = "attachment; filename=job_calendar.ics"
+        return response
+    else:
+        directory = os.getcwd()
+        response = make_response(send_from_directory(
+            directory, file_name, mimetype='text/plain'))
+        response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
+        return response
 
 
 @hut.route('/feed', methods=['GET'])

@@ -1168,9 +1168,9 @@ class JobCalendar(object):
             cal.add_component(event)
         # s = str(cal.to_ical(), encoding='utf8')
         # print(s)
+        with open('{0}_{1}_jb.ics'.format(self.school, self.mode), 'w', encoding='utf8') as f:
+            f.write(str(cal.to_ical(), encoding='utf8'))
         return(str(cal.to_ical(), encoding='utf8'))
-        # with open('jb.ics', 'w', encoding='utf8') as f:
-        #     f.write(str(cal.to_ical(), encoding='utf8'))
 
 
 class Pwd(object):
