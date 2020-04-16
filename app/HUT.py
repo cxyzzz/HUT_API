@@ -960,6 +960,7 @@ class JobCalendar(object):
         """
         m = kwargs.get('m') if kwargs.get('m') else 14
 
+        # print(kwargs)
         self.school = kwargs.get('school') if(
             kwargs.get('school') in self.SCHOOL_LIST.keys()) else 'hngydx'
         self.mode = kwargs.get('mode') if kwargs.get('mode') and isinstance(
@@ -1027,7 +1028,6 @@ class JobCalendar(object):
             'address': kwargs.get('address') if kwargs.get('address') else '',
             'type': kwargs.get('type') if kwargs.get('type') else 'inner'
         }
-        # print(self.school, self.mode, self.style)
         if(self.mode == 'getcareers'):
             params['professionals'] = kwargs['professionals'] if(
                 'professionals' in kwargs.keys()) else ''
@@ -1078,6 +1078,9 @@ class JobCalendar(object):
                                     self.CAREER_INFO_API_URL + data['career_talk_id'], headers=self.INFO_HEADERS)
                                 career_res = career_res.json()
                                 data['content'] = career_res['data']['remark']
+                                if (res['data'].index(data) % 9 == 0):
+                                    print("get career info sleep 1s")
+                                    time.sleep(1)
                         elif(self.mode == 'getjobfairs'):
                             fair_res = self.session.get(
                                 self.FAIR_INFO_API_URL + data['fair_id'], headers=self.INFO_HEADERS)
@@ -1089,12 +1092,18 @@ class JobCalendar(object):
                                         job['company_name'])
                             company_str = ', '.join(companys)
                             data['company_name'] = company_str
+                            if (res['data'].index(data) % 9 == 0):
+                                print("get career info sleep 1s")
+                                time.sleep(1)
                         elif (self.mode == 'getonlines'):
                             if(self.style == 'full'):
                                 online_res = self.session.get(
                                     self.ONLINE_INFO_URL + data['recruitment_id'], headers=self.INFO_HEADERS)
                                 online_res = online_res.json()
                                 data['content'] = online_res['data']['content']
+                                if (res['data'].index(data) % 9 == 0):
+                                    print("get online info sleep 1s")
+                                    time.sleep(1)
                         elif(self.mode == 'getjobs'):
                             if(self.style == 'full'):
                                 job_res = self.session.get(
@@ -1103,6 +1112,9 @@ class JobCalendar(object):
                                 data['content'] = job_res['data']['job_require'] + \
                                     '\n' + \
                                     job_res['data']['company']['introduction']
+                                if (res['data'].index(data) % 9 == 0):
+                                    print("get jobs info sleep 1s")
+                                    time.sleep(1)
                         datas.append(data)
                     if(self.mode in ('getonlines', 'getjobs')):
                         break

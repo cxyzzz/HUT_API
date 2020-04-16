@@ -124,25 +124,24 @@ def gen_job_cal():
         :args school mode, style, type
     """
 
-    kwargs = request.args
-
+    kwargs = request.args.to_dict()
     school = kwargs.get('school')
     if (school and school not in JobCalendar.SCHOOL_LIST.keys()):
-        return ("school 值错误，目前可选值：（如果确定你的学校使用的是一样的系统而列表里没有欢迎提交给我进行适配）\n{school_list}".format(JobCalendar.SCHOOL_LIST))
+        return ("school 值错误，默认：hngydx，目前可选值：（如果确定你的学校使用的是一样的系统而列表里没有欢迎提交给我进行适配）\n{school_list}".format(JobCalendar.SCHOOL_LIST))
 
     mode = kwargs.get('mode')
-    mode_tuple = ('getcareers', 'getjobfairs')
+    mode_tuple = ('getcareers, getjobfairs')
     if(mode and mode not in mode_tuple):
-        return("mode 值错误，可选值：'getcareers', 'getjobfairs'")
+        return("mode 值错误，可选值：getcareers(默认), getjobfairs")
 
     type_ = kwargs.get('type')
-    if(mode in ('getcareers', 'getjobfairs')):
+    if(mode in ('getcareers, getjobfairs')):
         if(type_ and type_ not in ('inner', 'outer')):
-            return("type 值错误，可选值：'inner', 'outer'")
+            return("type 值错误，可选值：inner(默认), outer")
 
     style = kwargs.get('style')
     if(style and style not in ('simple', 'full')):
-        return("style 值错误，可选值：'simple', 'full'")
+        return("style 值错误，可选值：simple(默认), full")
 
     # print(str(kwargs))
     job = JobCalendar(**kwargs)
