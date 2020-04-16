@@ -962,9 +962,10 @@ class JobCalendar(object):
 
         self.school = kwargs.get('school') if(
             kwargs.get('school') in self.SCHOOL_LIST.keys()) else 'hngydx'
-        self.mode = kwargs.get('mode') if kwargs.get('mode') else 'getcareers'
-        self.style = kwargs.get('style') if kwargs.get('style') else 'simple'
-
+        self.mode = kwargs.get('mode') if kwargs.get('mode') and isinstance(
+            kwargs.get('mode'), str) else 'getcareers'
+        self.style = kwargs.get('style') if kwargs.get(
+            'style') and isinstance(kwargs.get('mode'), str) else 'simple'
         self.HOST = '{school_name}.bibibi.net'.format(school_name=self.school)
         self.HEADERS['Host'] = self.HOST
         self.URL = 'http://' + self.HOST + '/module/' + self.mode
@@ -1236,7 +1237,7 @@ if __name__ == '__main__':
     # s = t.gen_cal()
     # print(t.get_datas())
     start = time.time()
-    t = JobCalendar()
+    t = JobCalendar(mode=None)
     s = t.gen_cal()
     end = time.time()
     print(end - start)
