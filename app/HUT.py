@@ -915,7 +915,7 @@ class ElectricityFeeInquiry(object):
 
 class JobCalendar(object):
     '''
-        学校列表：http://bibibi.net/tour/admin/tag/hzgx.htm
+        学校列表（不全，欢迎补充）：http://bibibi.net/tour/admin/tag/hzgx.htm
     '''
 
     SCHOOL_LIST = {'jndx': "暨南大学", 'hndx': "湖南大学", 'xtdx': "湘潭大学",
