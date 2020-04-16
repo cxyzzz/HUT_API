@@ -948,7 +948,7 @@ class JobCalendar(object):
     def __init__(self, **kwargs):
         """
             :school option 所请求的学校，目前已知可选值见 JobCalendar.SCHOOL_LIST default['hngydx']
-            :m option 生成从当前日期开始到 m 天后的数据 default[14]
+            :m option 生成从当前日期开始到 m 天后的数据（请勿使用过大的值，否则会触发频繁请求，目前没十次请求延迟 3s） default[14]
             :style option 生成日历数据是否包含公司简介（ HTML 格式，需要日历软件支持，比如：谷歌日历） default['simple']
             :mode option 请求数据类型，可选值：
                 宣讲会：'getcareers',需求参数见 get_datas 函数注释
@@ -1020,12 +1020,13 @@ class JobCalendar(object):
                     :type_id option 未知
         """
         params = {
-            'start': kwargs['start'] if('start' in kwargs.keys()) else 0,
-            'count': kwargs['count'] if('count' in kwargs.keys()) else 200,
-            'keyword': kwargs['keyword'] if('keyword' in kwargs.keys()) else '',
-            'address': kwargs['address'] if('address' in kwargs.keys()) else '',
-            'type': kwargs['type'] if('type' in kwargs.keys()) else 'inner'
+            'start': kwargs.get('start') if kwargs.get('start') else 0,
+            'count': kwargs.get('count') if kwargs.get('count') else 200,
+            'keyword': kwargs.get('keyword') if kwargs.get('keyword') else '',
+            'address': kwargs.get('address') if kwargs.get('address') else '',
+            'type': kwargs.get('type') if kwargs.get('type') else 'inner'
         }
+        # print(self.school, self.mode, self.style)
         if(self.mode == 'getcareers'):
             params['professionals'] = kwargs['professionals'] if(
                 'professionals' in kwargs.keys()) else ''
@@ -1065,7 +1066,8 @@ class JobCalendar(object):
             res = self.session.get(
                 self.URL, params=params, headers=self.HEADERS)
             self.INFO_HEADERS['Referer'] = res.url
-            if(res.status_code == 200):
+            if (res.status_code == 200):
+                # print(res.text, self.dates.index(date))
                 res = res.json()
                 if(res['data']):
                     for data in res['data']:
@@ -1097,10 +1099,15 @@ class JobCalendar(object):
                                 job_res = self.session.get(
                                     self.JOB_INFO_URL + data['publish_id'], headers=self.INFO_HEADERS)
                                 job_res = job_res.json()
-                                data['content'] = job_res['data']['job_require'] + '\n' + job_res['data']['company']['introduction']
+                                data['content'] = job_res['data']['job_require'] + \
+                                    '\n' + \
+                                    job_res['data']['company']['introduction']
                         datas.append(data)
                     if(self.mode in ('getonlines', 'getjobs')):
                         break
+            if (self.dates.index(date) % 9 == 0):
+                print("sleep 3s")
+                time.sleep(3)
         return datas
 
     def gen_cal(self, **kwargs):
@@ -1135,7 +1142,8 @@ class JobCalendar(object):
                     data['professionals'],
                     self.CAREER_INFO_URL + data['career_talk_id'])
                 if(self.style == 'full'):
-                    description += '\n{content}'.format(content=data['content'])
+                    description += '\n{content}'.format(
+                        content=data['content'])
                 event.add('DESCRIPTION', description)
             elif(self.mode == 'getjobfairs'):
                 event.add('SUMMARY', data['title'])
@@ -1228,7 +1236,7 @@ if __name__ == '__main__':
     # s = t.gen_cal()
     # print(t.get_datas())
     start = time.time()
-    t = JobCalendar(style='full', mode='getonlines')
+    t = JobCalendar()
     s = t.gen_cal()
     end = time.time()
     print(end - start)

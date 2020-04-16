@@ -144,6 +144,7 @@ def gen_job_cal():
     if(style and style not in ('simple', 'full')):
         return("style 值错误，可选值：'simple', 'full'")
 
+    # print(str(kwargs))
     job = JobCalendar(**kwargs)
     data = job.gen_cal(**kwargs)
     if(not data):
