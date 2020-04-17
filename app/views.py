@@ -221,7 +221,6 @@ def school_feed():
 def job_feed():
     kwargs = request.args.to_dict()
 
-    kwargs['style'] = 'full'
     school = kwargs.get('school', 'hngydx')
     if (school and school not in JobCalendar.SCHOOL_LIST.keys()):
         return ("school 值错误，默认：hngydx，目前可选值：（如果确定你的学校使用的是一样的系统而列表里没有欢迎提交给我进行适配）\n{school_list}".format(JobCalendar.SCHOOL_LIST))
@@ -239,8 +238,10 @@ def job_feed():
     else:
         kwargs['mode'] = 'getonlines'
         mode_name = '在线招聘'
+    kwargs['style'] = 'full'
+    kwargs['mode'] = 'getonlines'
     file_name = school_name + mode_name + '_feed.xml'
-
+    print(kwargs)
     try:
         file_timstamp = os.path.getmtime(file_name)
         file_timeinfo = datetime.fromtimestamp(file_timstamp)
