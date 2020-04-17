@@ -1,11 +1,78 @@
 import datetime
 import re
-from xml.dom.minidom import Document
-
 import requests
+from xml.dom.minidom import Document
+if __name__ == "__main__":
+    from HUT import JobCalendar
+else:
+    from app.HUT import JobCalendar
 
 
-class SchoolFeed(object):
+class Feed(object):
+    def __init__(self):
+        super().__init__()
+        self._document = Document()
+
+    def _create_text_element(self, type_, text='', attribute=None):
+        """Create a text element and return it."""
+        element = self._document.createElement(type_)
+        element.appendChild(self._document.createTextNode(text))
+        if attribute:
+            for _attribute in attribute:
+                element.setAttribute(_attribute['key'], _attribute['vaule'])
+        return element
+
+    def _create_cdata_element(self, type_, text='', attribute=None):
+        """Create a CDATA element and return it."""
+        element = self._document.createElement(type_)
+        element.appendChild(self._document.createCDATASection(text))
+        if attribute:
+            for _attribute in attribute:
+                element.setAttribute(_attribute['key'], _attribute['vaule'])
+        return element
+
+    def _create_item(self, title, link, guid, pubDate, description='', creator='', categories='', content=''):
+        self._item = self._document.createElement('item')
+        self._item.appendChild(
+            self._create_text_element(type_='title',  text=title))
+        self._item.appendChild(
+            self._create_text_element(type_='link',  text=link))
+        self._item.appendChild(
+            self._create_cdata_element(type_='description',  text=description))
+        self._item.appendChild(
+            self._create_text_element(type_='creator',  text=creator))
+        self._item.appendChild(
+            self._create_text_element(type_='categories',  text=categories))
+        self._item.appendChild(
+            self._create_text_element(type_='guid',  text=link, attribute=[{'key': 'isPermaLink', 'vaule': 'false'}]))
+        self._item.appendChild(
+            self._create_text_element(type_='pubDate',  text=pubDate))
+        self._item.appendChild(
+            self._create_cdata_element(type_='content:encoded', text=content))
+        return self._item
+
+    def _create_channel(self, title, link='', description='', webMaster='', language='zh-CN', lastBuildDate='', items=[]):
+        self._channel = self._document.createElement('channel')
+        self._channel.appendChild(
+            self._create_text_element(type_='title', text=title))
+        self._channel.appendChild(
+            self._create_text_element(type_='link',  text=link))
+        self._channel.appendChild(
+            self._create_text_element(type_='description',  text=description))
+        self._channel.appendChild(
+            self._create_text_element(type_='webMaster',  text=webMaster))
+        self._channel.appendChild(
+            self._create_text_element(type_='language',  text="zh-CN"))
+        self._channel.appendChild(
+            self._create_text_element(type_='lastBuildDate', text=lastBuildDate))
+
+        for item in items:
+            self._channel.appendChild(item)
+
+        return self._channel
+
+
+class SchoolFeed(Feed):
     # 生成学校校内新闻和通知公告 RSS
 
     HOST = 'https://www.17wanxiao.com'
@@ -19,6 +86,7 @@ class SchoolFeed(object):
                  )
 
     def __init__(self, type_=3, customerId=786):
+        super().__init__()
         if (type_ in (2, 3)):
             self.type_ = type_
         else:
@@ -140,58 +208,32 @@ class SchoolFeed(object):
         return info
 
     def gen_feed(self):
-        def _create_text_element(doc, type_, text, attribute=None):
-            """Create a text element and return it."""
-            element = doc.createElement(type_)
-            element.appendChild(doc.createTextNode(text))
-            if attribute:
-                element.setAttribute(attribute['key'], attribute['vaule'])
-            return element
-
-        def _create_cdata_element(doc, type_, text, attribute=None):
-            """Create a CDATA element and return it."""
-            element = doc.createElement(type_)
-            element.appendChild(doc.createCDATASection(text))
-            if attribute:
-                element.setAttribute(attribute['key'], attribute['vaule'])
-            return element
-
         pages = self.get_pages()
         now = datetime.datetime.now()
 
-        self._document = Document()
-
         # 头部
-        rss_element = self._document.createElement('rss')
-        rss_element.setAttribute('version', '2.0')
-        rss_element.setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom')
-        rss_element.setAttribute(
-            'xmlns:dc', 'http://purl.org/dc/elements/1.1/')
-        rss_element.setAttribute(
-            'xmlns:content', 'http://purl.org/rss/1.0/modules/content/')
+        attribute = []
+        attribute.append({'key': 'version', 'vaule': '2.0'})
+        attribute.append(
+            {'key': 'xmlns:atom', 'vaule': 'http://www.w3.org/2005/Atom'})
+        attribute.append(
+            {'key': 'xmlns:dc', 'vaule': 'http://purl.org/dc/elements/1.1/'})
+        attribute.append(
+            {'key': 'xmlns:content', 'vaule': 'http://purl.org/rss/1.0/modules/content/'})
+        rss_element = self._create_text_element(
+            type_='rss', attribute=attribute)
         self._document.appendChild(rss_element)
 
         # channel
         school_info = self.get_school_info()
-        title = school_info['name'] + self.name
-        link = 'https://www.17wanxiao.com/campus/campus/schoolinfo/list.action?type={type_}&customerId={customerId}'.format(
+        channel_title = school_info['name'] + self.name
+        channel_description = school_info['summary']
+        channel_lastBuildDate = now.strftime("%c")
+        channel_webMaster = 'virgo_2333@163.com'
+        channel_link = 'https://www.17wanxiao.com/campus/campus/schoolinfo/list.action?type={type_}&customerId={customerId}'.format(
             type_=self.type_, customerId=self.customerId)
 
-        self._channel = self._document.createElement('channel')
-        rss_element.appendChild(self._channel)
-        self._channel.appendChild(
-            _create_text_element(self._document, type_='title', text=title))
-        self._channel.appendChild(
-            _create_text_element(self._document, type_='link',  text=link))
-        self._channel.appendChild(
-            _create_text_element(self._document, type_='description',  text=school_info['summary']))
-        self._channel.appendChild(
-            _create_text_element(self._document, type_='webMaster',  text="virgo_2333@163.com"))
-        self._channel.appendChild(
-            _create_text_element(self._document, type_='language',  text="zh-CN"))
-        self._channel.appendChild(
-            _create_text_element(self._document, type_='lastBuildDate',  text=now.strftime("%c")))
-
+        Items = []
         for page in pages:
             if (page['createTime'].rfind('天前') == -1):
                 date_time_list = re.findall(r'\d+', page['createTime'])
@@ -213,29 +255,24 @@ class SchoolFeed(object):
                 hour = date_time.hour
                 minu = date_time.minute
 
-            pubDate = datetime.datetime(now.year, int(
-                mon), int(day), int(hour), int(minu))
-            content = re.sub(r'\s+', '', page['body'])
-
             # item
-            self._item = self._document.createElement('item')
-            self._channel.appendChild(self._item)
-            self._item.appendChild(
-                _create_text_element(self._document, type_='title',  text=page['title']))
-            self._item.appendChild(
-                _create_text_element(self._document, type_='link',  text=page['url']))
-            self._item.appendChild(
-                _create_cdata_element(self._document, type_='description',  text=page['summary']))
-            self._item.appendChild(
-                _create_text_element(self._document, type_='creator',  text=page['creator']))
-            self._item.appendChild(
-                _create_text_element(self._document, type_='categories',  text=self.name))
-            self._item.appendChild(
-                _create_text_element(self._document, type_='guid',  text=page['url'], attribute={'key': 'isPermaLink', 'vaule': 'false'}))
-            self._item.appendChild(
-                _create_text_element(self._document, type_='pubDate',  text=pubDate.strftime('%c')))
-            self._item.appendChild(
-                _create_cdata_element(self._document, type_='content:encoded', text=content))
+            item_title = page['title']
+            item_link = page['url']
+            item_description = page['summary']
+            item_creator = page['creator']
+            item_categories = self.name
+            item_guid = page['url']
+            item_pubDate = datetime.datetime(now.year, int(
+                mon), int(day), int(hour), int(minu)).strftime('%c')
+            item_content = re.sub(r'\s+', '', page['body'])
+            self._item = self._create_item(
+                title=item_title, link=item_link, guid=item_guid, pubDate=item_pubDate,
+                description=item_description, creator=item_creator, categories=item_categories, content=item_content)
+            Items.append(self._item)
+        self._channel = self._create_channel(
+            title=channel_title, link=channel_link, description=channel_description,
+            webMaster=channel_webMaster, lastBuildDate=channel_lastBuildDate, items=Items)
+        rss_element.appendChild(self._channel)
 
         with open(self.name + '_feed.xml', 'w') as f:
             self._document.writexml(f)
@@ -243,7 +280,73 @@ class SchoolFeed(object):
         return self._document.toxml()
 
 
+class JobFeed(Feed):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.job = JobCalendar(**kwargs)
+
+    def gen_feed(self):
+
+        # 头部
+        attribute = []
+        attribute.append({'key': 'version', 'vaule': '2.0'})
+        attribute.append(
+            {'key': 'xmlns:atom', 'vaule': 'http://www.w3.org/2005/Atom'})
+        attribute.append(
+            {'key': 'xmlns:dc', 'vaule': 'http://purl.org/dc/elements/1.1/'})
+        attribute.append(
+            {'key': 'xmlns:content', 'vaule': 'http://purl.org/rss/1.0/modules/content/'})
+        rss_element = self._create_text_element(
+            type_='rss', attribute=attribute)
+        self._document.appendChild(rss_element)
+
+        # channel
+        now = datetime.datetime.now()
+        channel_title = self.job.SCHOOL_LIST[self.job.school]
+        if (self.job.mode == 'getonlines'):
+            flag = 1  # 区分在线招聘和岗位招聘，方便后面生成item
+            channel_title += '在线招聘'
+            item_link = self.job.ONLINE_URL
+        elif (self.job.mode == 'getjobs'):
+            flag = 0
+            channel_title += '岗位招聘'
+            item_link = self.job.JOB_URL
+        channel_lastBuildDate = now.strftime("%c")
+        channel_webMaster = 'virgo_2333@163.com'
+        channel_link = 'http://{0}/module/{1}'.format(
+            self.job.HOST, self.job.mode[3:])
+
+        Items = []
+        datas = self.job.get_datas()
+        for data in datas:
+            # item
+            item_title = data['title'] if flag else '{0}-{1}'.format(data['job_name'], '-' + data['company_name'])
+            item_link += (data['recruitment_id'] if flag else data['publish_id'])
+            item_description = data['job_recruitment'] if flag else '{0} {1} {2}\n{3}{4}\n{5}\n时间：{6}至{7}'.format(
+                data['city_name'], data['salary'], data['scale'], data['degree_require'], data['about_major'], data['keywords'], data['publish_time'], data['end_time'])
+            item_creator = data['company_name']
+            item_categories = data['recruit_type'] if flag else data['industry_category']
+            item_guid = data['recruitment_id'] if flag else data['publish_id']
+            item_pubDate = data['create_time'] if flag else data['publish_time']
+            item_content = data['content']
+            self._item = self._create_item(
+                title=item_title, link=item_link, guid=item_guid, pubDate=item_pubDate,
+                description=item_description, creator=item_creator, categories=item_categories, content=item_content)
+            Items.append(self._item)
+        self._channel = self._create_channel(
+            title=channel_title, link=channel_link, description=channel_title,
+            webMaster=channel_webMaster, lastBuildDate=channel_lastBuildDate, items=Items)
+        rss_element.appendChild(self._channel)
+
+        with open(channel_title + '_feed.xml', 'w') as f:
+            self._document.writexml(f)
+
+        return self._document.toxml()
+
+
 if __name__ == "__main__":
-    t = SchoolFeed()
-    s = t.gen_feed()
+    s = JobFeed(mode='getjobs', style='full')
+    t = s.gen_feed()
+    # s = SchoolFeed()
+    # t = s.gen_feed()
     pass

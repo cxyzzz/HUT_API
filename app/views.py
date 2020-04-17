@@ -1,5 +1,5 @@
 import os
-from app.feed import SchoolFeed
+from app.feed import SchoolFeed, JobFeed
 from datetime import timedelta, datetime
 from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, send_from_directory, session, url_for)
@@ -206,6 +206,55 @@ def school_feed():
     if (now_hour - file_timeinfo.hour >= 1):
         school = SchoolFeed(type_=type_, customerId=customerId)
         rss = school.gen_feed()
+        response = make_response(rss)
+        response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
+        return response
+    else:
+        directory = os.getcwd()
+        response = make_response(send_from_directory(
+            directory, file_name, mimetype='application/xml'))
+        response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
+        return response
+
+
+@hut.route('/jobfeed', methods=['GET'])
+def job_feed():
+    kwargs = request.args.to_dict()
+
+    kwargs['style'] = 'full'
+    school = kwargs.get('school', 'hngydx')
+    if (school and school not in JobCalendar.SCHOOL_LIST.keys()):
+        return ("school 值错误，默认：hngydx，目前可选值：（如果确定你的学校使用的是一样的系统而列表里没有欢迎提交给我进行适配）\n{school_list}".format(JobCalendar.SCHOOL_LIST))
+    school_name = JobCalendar.SCHOOL_LIST[school]
+
+    mode = kwargs.get('mode', 'getonlines')
+    mode_tuple = ('getonlines, getjobs')
+    if(mode and mode not in mode_tuple):
+        return("mode 值错误，可选值：getonlines(默认), getjobs")
+
+    if (mode == 'getonlines'):
+        mode_name = '在线招聘'
+    elif(mode == 'getjobs'):
+        mode_name = "岗位招聘"
+    else:
+        kwargs['mode'] = 'getonlines'
+        mode_name = '在线招聘'
+    file_name = school_name + mode_name + '_feed.xml'
+
+    try:
+        file_timstamp = os.path.getmtime(file_name)
+        file_timeinfo = datetime.fromtimestamp(file_timstamp)
+    except FileNotFoundError:
+        job = JobFeed(**kwargs)
+        rss = job.gen_feed()
+        response = make_response(rss)
+        response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
+        return response
+
+    now_hour = datetime.now().hour
+    if (now_hour - file_timeinfo.hour >= 1):
+        job = JobFeed(**kwargs)
+        rss = job.gen_feed()
         response = make_response(rss)
         response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
         return response
