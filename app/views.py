@@ -192,6 +192,11 @@ def school_feed():
         name = "通知公告"
     file_name = name + '_feed.xml'
 
+    refresh = request.args.get('refresh')
+    if (refresh):
+        school = SchoolFeed(type_=type_, customerId=customerId)
+        rss = school.gen_feed()
+
     try:
         file_timstamp = os.path.getmtime(file_name)
         file_timeinfo = datetime.fromtimestamp(file_timstamp)
@@ -241,7 +246,13 @@ def job_feed():
     kwargs['style'] = 'full'
     kwargs['mode'] = 'getonlines'
     file_name = school_name + mode_name + '_feed.xml'
-    print(kwargs)
+    # print(kwargs)
+
+    refresh = request.args.get('refresh')
+    if (refresh):
+        job = JobFeed(**kwargs)
+        rss = job.gen_feed()
+
     try:
         file_timstamp = os.path.getmtime(file_name)
         file_timeinfo = datetime.fromtimestamp(file_timstamp)
