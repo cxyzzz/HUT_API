@@ -1,4 +1,5 @@
 import os
+import time
 from app.feed import SchoolFeed, JobFeed
 from datetime import timedelta, datetime
 from flask import (Blueprint, flash, make_response, redirect, render_template,
@@ -208,14 +209,17 @@ def school_feed():
         return response
 
     now_hour = datetime.now().hour
-    if (now_hour - file_timeinfo.hour >= 1):
+    if (abs(now_hour - file_timeinfo.hour) >= 1):
+        print("New -----------------")
         school = SchoolFeed(type_=type_, customerId=customerId)
         rss = school.gen_feed()
         response = make_response(rss)
         response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
         return response
     else:
+        print("Cache -----------------")
         directory = os.getcwd()
+        os.utime(f'{directory}/{file_name}', (time.time(), time.time()))
         response = make_response(send_from_directory(
             directory, file_name, mimetype='application/xml'))
         response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
@@ -264,7 +268,7 @@ def job_feed():
         return response
 
     now_hour = datetime.now().hour
-    if (now_hour - file_timeinfo.hour >= 1):
+    if (abs(now_hour - file_timeinfo.hour) >= 1):
         job = JobFeed(**kwargs)
         rss = job.gen_feed()
         response = make_response(rss)
@@ -272,6 +276,7 @@ def job_feed():
         return response
     else:
         directory = os.getcwd()
+        os.utime(f'{directory}/{file_name}', (time.time(), time.time()))
         response = make_response(send_from_directory(
             directory, file_name, mimetype='application/xml'))
         response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
