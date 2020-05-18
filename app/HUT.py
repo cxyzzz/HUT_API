@@ -859,9 +859,9 @@ class ElectricityFeeInquiry(object):
         return res
 
     def query(self, xq, ld, qs):
-        print('xq-ld-qs', '%s-%s-%s' % (xq, ld, qs))
+        # print('xq-ld-qs', '%s-%s-%s' % (xq, ld, qs))
         if xq not in ('河东', '河西'):
-            return "校区错误，可选值：河东、河西"
+            return "校区(xq)错误，可选值：河东、河西"
         else:
             if xq == '河东':
                 areaid = '1016'
@@ -876,27 +876,29 @@ class ElectricityFeeInquiry(object):
         else:
             ld_name = '学生宿舍' + str(ld) + '栋'
             qs_name = ld + '-' + qs
-        print('ld_name:', ld_name)
+        # print('ld_name:', ld_name)
         if ld_data['code'] == 'SUCCESS':
-            print("ld_data['msg']", ld_data['msg'])
+            # print("ld_data['msg']", ld_data['msg'])
             # print(ld_data['roomlist'])
             buildid = None
             for room in ld_data['roomlist']:
                 if ld_name == room['name']:
                     buildid = room['id']
             if not buildid:
-                return "未找到当前楼栋，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
+                return "未找到当前楼栋(ld)，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
         else:
             return ld_data['msg']
 
         qs_data = self.getJzinfo(4, areaid, buildid, -1)
         if qs_data['code'] == 'SUCCESS':
-            print('qs_data:', qs_data['msg'])
-            print(qs_data)
+            # print('qs_data:', qs_data['msg'])
+            # print(qs_data)
+            qsid = None
             for room in qs_data['roomlist']:
                 if qs_name == room['name']:
                     qsid = room['id']
-            return "未找到当前寝室，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
+            if(not qsid):
+                return "未找到当前寝室(qs)，请检查是否有错(输入数字即可，暂不支持非学生公寓查询)"
         else:
             return qs_data['msg']
 
