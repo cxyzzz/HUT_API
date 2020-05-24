@@ -281,3 +281,9 @@ def job_feed():
             directory, file_name, mimetype='application/xml'))
         response.headers['Content-Type'] = 'application/xml; charset=UTF-8'
         return response
+
+
+@hut.route('/callback', methods=['GET'])
+def callback():
+    kwargs = request.args.to_dict()
+    return kwargs
